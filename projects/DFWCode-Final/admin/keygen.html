@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>DFWCode - Key Generator</title>
+    <style>
+        body { background: #0f172a; color: #e2e8f0; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .card { background: #1e293b; padding: 2rem; border-radius: 1rem; border: 1px solid #334155; width: 400px; text-align: center; }
+        h1 { color: #f472b6; margin-bottom: 1.5rem; }
+        button { background: #8b5cf6; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-size: 1rem; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s; }
+        button:hover { background: #7c3aed; }
+        #output { margin-top: 1.5rem; background: #020617; padding: 1rem; border-radius: 0.5rem; border: 1px solid #334155; min-height: 50px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; letter-spacing: 2px; user-select: all; cursor: pointer; }
+        .note { font-size: 0.8rem; color: #94a3b8; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1><span style="font-size:2rem">🔑</span> KeyGen</h1>
+        <button onclick="generate()">Générer une Clé PRO</button>
+        <div id="output" onclick="copy(this)" title="Cliquer pour copier">...</div>
+        <p class="note">Cette clé fonctionne hors-ligne avec l'algorithme "ARCH".</p>
+    </div>
+
+    <script>
+        // Inlined Security Module for Standalone Usage
+        const Security = {
+            _salt: 0x5F3759DF,
+            hash: function (str) {
+                let hash = 5381;
+                for (let i = 0; i < str.length; i++) {
+                    hash = ((hash << 5) + hash) + str.charCodeAt(i);
+                }
+                return hash >>> 0;
+            },
+            generateKey: function () {
+                const pre = 'ARCH';
+                const seedNum = Math.floor(Math.random() * 65535);
+                const seed = seedNum.toString(16).toUpperCase().padStart(4, '0');
+                const hashVal = ((seedNum ^ this._salt) * 13) >>> 0;
+                const hash = hashVal.toString(16).toUpperCase();
+                const fullStr = pre + seed + hash;
+                const csum = (this.hash(fullStr) % 255).toString(16).toUpperCase();
+                return `${pre}-${seed}-${hash}-${csum}`;
+            }
+        };
+        
+        window.generate = () => {
+            const key = Security.generateKey();
+            document.getElementById('output').innerText = key;
+        };
+
+        window.copy = (el) => {
+            if(el.innerText === '...') return;
+            navigator.clipboard.writeText(el.innerText);
+            const old = el.style.borderColor;
+            el.style.borderColor = '#10b981';
+            setTimeout(() => el.style.borderColor = '#334155', 500);
+        };
+    </script>
+</body>
+</html>

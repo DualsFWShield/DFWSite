@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFWCode - QR & Barcode Studio</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="src/css/style.css">
+
+    <!-- Engines -->
+    <script src="https://unpkg.com/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <!-- Font Awesome -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('SW registered', reg))
+                .catch(err => console.log('SW failed', err));
+        }
+    </script>
+</head>
+
+<body>
+
+    <!-- LICENSE MODAL -->
+    <div class="modal-bg" id="modal">
+        <div class="modal">
+            <!-- NORMAL VIEW -->
+            <div id="modal-content">
+                <i class="fa-solid fa-crown" style="font-size:3rem; color:var(--gold); margin-bottom:15px;"></i>
+                <h2>Activate <span class="fake-badge-pro">PRO</span></h2>
+                <p style="color:var(--text-muted); margin-bottom:20px; margin-top:5px; font-size:0.9rem;">Get your PRO
+                    key from the creator and unlock all features now.</p>
+
+                <input type="text" id="licenseKey" class="key-input" placeholder="XXXX-XXXX-XXXX-XXXX">
+                <div id="status-msg" style="height:20px; font-size:0.8rem; margin-bottom:10px;"></div>
+
+                <button class="btn btn-p" style="width:100%; justify-content:center; margin-top:5px;"
+                    onclick="AuthSystem.attemptLogin()">Validate License</button>
+                <button class="btn btn-s" style="width:100%; justify-content:center; margin-top:5px; border:none;"
+                    onclick="closeModal()">Close</button>
+            </div>
+
+            <!-- HIDDEN ADMIN PANEL (Injected via JS) -->
+            <div id="admin-interface" class="hidden admin-panel">
+                <div class="admin-header">
+                    <h3 style="color:#f472b6"><i class="fa-solid fa-terminal"></i> ROOT_ACCESS</h3>
+                    <button onclick="AdminTools.close()"
+                        style="background:none; border:none; color:white; cursor:pointer">✕</button>
+                </div>
+                <div class="form-row">
+                    <div class="col"><label>Quantity</label><input type="number" id="gen-count" value="5"></div>
+                    <div class="col"><label>Action</label><button class="btn btn-p" style="width:100%;"
+                            onclick="AdminTools.generate(Security)">Generate</button></div>
+                </div>
+                <div class="console" id="admin-console">
+                    > System ready...<br>
+                    > Waiting for command...
+                </div>
+                <button class="btn btn-s" style="width:100%; justify-content:center; border-color:#334155"
+                    onclick="AdminTools.copyAll()">Copy All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ICON MODAL -->
+    <div class="modal-bg" id="icon-modal">
+        <div class="modal"
+            style="width:80vw; max-width:800px; max-height: 80vh; display: flex; flex-direction: column;">
+            <h2 style="margin-bottom:15px;">Choose an Icon</h2>
+
+            <div style="flex-shrink: 0;">
+                <input type="text" id="icon-search" placeholder="Search icon (e.g., house, facebook, email)..."
+                    oninput="filterIcons(this.value)" style="margin-bottom:15px; border-color: var(--primary);">
+            </div>
+
+            <div id="icon-grid"
+                style="display:grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap:10px; overflow-y:auto; padding:10px; background: var(--bg-input); border-radius:8px; flex-grow: 1;">
+                <!-- Icons will be injected by JS -->
+            </div>
+
+            <button class="btn btn-s" style="width:100%; justify-content:center; margin-top:20px; flex-shrink: 0;"
+                onclick="closeIconModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">DFW<span style="color:var(--primary)">Code</span></div>
+
+        <div class="nav-item active" onclick="switchMode('qr')" id="btn-mode-qr">
+            <i class="fa-solid fa-qrcode"></i>
+            <div class="tooltip">QR Studio</div>
+        </div>
+        <div class="nav-item" onclick="switchMode('bar')" id="btn-mode-bar">
+            <i class="fa-solid fa-barcode"></i>
+            <div class="tooltip">Barcode Lab</div>
+        </div>
+
+        <div style="width: 40px; height: 1px; background: var(--border); margin: 10px 0;"></div>
+
+        <div class="nav-item" onclick="toggleHistory()" id="btn-history">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <div class="tooltip">History</div>
+        </div>
+
+        <div class="nav-item" onclick="toggleBulk()" id="btn-bulk">
+            <i class="fa-solid fa-layer-group"></i>
+            <div class="tooltip">Bulk Gen</div>
+        </div>
+
+        <div style="flex:1"></div>
+        <div class="nav-item" onclick="openModal()" id="lockBtn">
+            <i class="fa-solid fa-lock" style="color:var(--gold)"></i>
+            <div class="tooltip">Premium</div>
+        </div>
+    </div>
+
+    <!-- SETTINGS PANEL -->
+    <div class="settings">
+
+        <!-- QR SETTINGS -->
+        <div id="qr-settings">
+            <div class="header">
+                <h2>QR Studio</h2>
+            </div>
+
+            <!-- Types Grid -->
+            <div class="grid-types">
+                <div class="type-opt active" onclick="setQrType('url', this)"><i class="fa-solid fa-link"></i><span
+                        style="display:block; margin-top:6px;">URL</span></div>
+                <div class="type-opt" onclick="setQrType('text', this)"><i class="fa-solid fa-align-left"></i><span
+                        style="display:block; margin-top:6px;">Text</span></div>
+                <div class="type-opt" onclick="setQrType('wifi', this)"><i class="fa-solid fa-wifi"></i><span
+                        style="display:block; margin-top:6px;">WiFi</span></div>
+                <div class="type-opt" onclick="setQrType('vcard', this)"><i class="fa-regular fa-id-card"></i><span
+                        style="display:block; margin-top:6px;">VCard</span></div>
+                <div class="type-opt" onclick="setQrType('email', this)"><i class="fa-regular fa-envelope"></i><span
+                        style="display:block; margin-top:6px;">Email</span></div>
+                <div class="type-opt" onclick="setQrType('sms', this)"><i class="fa-solid fa-comment-dots"></i><span
+                        style="display:block; margin-top:6px;">SMS</span></div>
+                <div class="type-opt" onclick="setQrType('crypto', this)"><i class="fa-brands fa-bitcoin"></i><span
+                        style="display:block; margin-top:6px;">Crypto</span></div>
+                <div class="type-opt" onclick="setQrType('event', this)"><i class="fa-regular fa-calendar"></i><span
+                        style="display:block; margin-top:6px;">Event</span></div>
+            </div>
+
+            <div class="controls-area">
+                <!-- Dynamic Data Inputs -->
+                <div id="qr-inputs"></div>
+
+                <!-- Expert Mode -->
+                <div class="group-label">Expert & Density <span class="badge-pro" data-trigger="secret">PRO</span></div>
+                <div class="locked-area" id="lock-expert">
+                    <div class="lock-badge">PRO</div>
+                    <div class="form-row">
+                        <div class="col">
+                            <label>Correction (ECL)</label>
+                            <select id="qrEcl" onchange="updateQR()">
+                                <option value="L">L (Low)</option>
+                                <option value="M">M (Medium)</option>
+                                <option value="Q" selected>Q (Quartile)</option>
+                                <option value="H">H (High)</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label>Density (Ver 0-40)</label>
+                            <input type="number" id="qrVer" min="0" max="40" value="0" oninput="updateQR()">
+                        </div>
+                    </div>
+                    <label>Mask (-1 Auto)</label>
+                    <input type="range" id="qrMask" min="-1" max="7" value="-1" oninput="updateQR()">
+
+                    <label>Padding</label>
+                    <input type="range" id="qrMargin" min="0" max="50" value="0" oninput="updateQR()">
+                </div>
+
+                <!-- Templates -->
+                <div class="group-label">Templates <span class="badge-pro">PRO</span></div>
+                <div class="locked-area" id="lock-templates">
+                    <div class="lock-badge">PRO</div>
+                    <div id="template-grid" class="vis-grid" style="grid-template-columns: repeat(4, 1fr);">
+                        <!-- Templates injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Appearance -->
+                <div class="group-label">Colors & Design</div>
+                <div class="form-row">
+                    <div class="col">
+                        <label>Dots Color</label>
+                        <div class="color-picker-wrapper">
+                            <div class="color-preview" style="background-color: #000000;"
+                                onclick="this.nextElementSibling.click()"></div>
+                            <input type="color" id="colDots" value="#000000"
+                                oninput="this.previousElementSibling.style.backgroundColor = this.value; updateQR()">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label>Background</label>
+                        <div class="color-picker-wrapper">
+                            <div class="color-preview" style="background-color: #ffffff;"
+                                onclick="this.nextElementSibling.click()"></div>
+                            <input type="color" id="colBg" value="#ffffff"
+                                oninput="this.previousElementSibling.style.backgroundColor = this.value; updateQR()">
+                        </div>
+                    </div>
+                </div>
+                <label class="checkbox-label" style="margin-top:10px;">
+                    <input type="checkbox" id="useGlobalColor" onchange="toggleGlobalColor(this.checked)"> Use Global
+                    Color
+                </label>
+
+                <div class="locked-area" id="lock-grad" style="margin-top:10px;">
+                    <div class="lock-badge">PRO</div>
+                    <label>Gradient (Color 2)</label>
+                    <div class="color-picker-wrapper">
+                        <div class="color-preview" style="background-color: #000000;"
+                            onclick="this.nextElementSibling.click()"></div>
+                        <input type="color" id="colGrad" value="#000000"
+                            oninput="this.previousElementSibling.style.backgroundColor = this.value; updateQR()">
+                    </div>
+                    <label class="checkbox-label" style="margin-top:10px;">
+                        <input type="checkbox" id="useGrad" onchange="updateQR()"> Enable Gradient
+                    </label>
+                </div>
+
+                <div class="group-label">Shapes</div>
+                <div class="vis-grid">
+                    <div class="vis-item active" onclick="setShape('dot','square',this)">
+                        <div class="s-box"></div>
+                    </div>
+                    <div class="vis-item" onclick="setShape('dot','dots',this)">
+                        <div class="s-dot"></div>
+                    </div>
+                    <div class="vis-item" onclick="setShape('dot','rounded',this)">
+                        <div class="s-rnd"></div>
+                    </div>
+                    <div class="vis-item" onclick="setShape('dot','extra-rounded',this)">
+                        <div class="s-ex-rnd"></div>
+                    </div>
+                    <div class="vis-item" onclick="setShape('dot','classy',this)">
+                        <div class="s-classy"></div>
+                    </div>
+                    <div class="vis-item" onclick="setShape('dot','classy-rounded',this)">
+                        <div class="s-classy-rnd"></div>
+                    </div>
+                </div>
+
+                <div class="group-label" style="margin-top:10px;">Corners (Outer Frame)</div>
+                <div class="form-row">
+                    <div class="col">
+                        <div class="color-picker-wrapper">
+                            <div class="color-preview" style="background-color: #000000;"
+                                onclick="this.nextElementSibling.click()"></div>
+                            <input type="color" id="colCorner" value="#000000"
+                                oninput="this.previousElementSibling.style.backgroundColor = this.value; updateQR()">
+                        </div>
+                    </div>
+                    <div class="col" style="display:flex; align-items:center; font-size:0.7rem; color:#888;">Frame Color
+                    </div>
+                </div>
+                <div class="vis-grid">
+                    <div class="vis-item active" onclick="setShape('cornerSquare','square',this)">
+                        <div class="s-eye-sq"></div>
+                    </div>
+                    <div class="vis-item" onclick="setShape('cornerSquare','dot',this)">
+                        <div class="s-eye-rnd"></div>
+                    </div>
+                    <div class="vis-item" onclick="setShape('cornerSquare','extra-rounded',this)">
+                        <div class="s-eye-sq" style="border-radius:6px"></div>
+                    </div>
+                </div>
+
+                <div class="group-label" style="margin-top:10px;">Corners (Inner Dot)</div>
+                <div class="vis-grid">
+                    <div class="vis-item active" onclick="setShape('cornerDot','square',this)">
+                        <div class="s-box" style="width: 10px; height: 10px;"></div>
+                    </div>
+                    <div class="vis-item" onclick="setShape('cornerDot','dot',this)">
+                        <div class="s-dot" style="width: 10px; height: 10px;"></div>
+                    </div>
+                </div>
+
+                <!-- Images -->
+                <div class="group-label">Branding & Background <span class="badge-pro">PRO</span></div>
+                <div class="locked-area" id="lock-imgs">
+                    <div class="lock-badge">PRO</div>
+                    <label>Logo / Icon</label>
+                    <div class="form-row" style="align-items: stretch; min-height: 50px;">
+                        <div class="col">
+                            <label for="logoFile" id="logo-drop-zone" class="file-drop-zone">
+                                <span>Drag logo or click</span>
+                            </label>
+                            <input type="file" id="logoFile" class="hidden-file-input" accept="image/*"
+                                onchange="processLogoFile(this.files[0])">
+                        </div>
+                        <div class="col">
+                            <button class="btn-s" style="width:100%; height:100%;" onclick="openIconModal()">
+                                <i class="fa-solid fa-icons"></i> Icons
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="icon-controls" class="hidden"
+                        style="margin-top:10px; background: rgba(255,255,255,0.03); padding:10px; border-radius:6px;">
+                        <div id="icon-preview" style="text-align:center; padding:5px; font-size:0.8rem;"></div>
+                        <div class="form-row">
+                            <div class="col">
+                                <label>Icon Color</label>
+                                <div class="color-picker-wrapper">
+                                    <div class="color-preview" style="background-color: #000000;"
+                                        onclick="this.nextElementSibling.click()"></div>
+                                    <input type="color" id="iconColor" value="#000000"
+                                        oninput="this.previousElementSibling.style.backgroundColor = this.value; updateQR()">
+                                </div>
+                            </div>
+                            <div class="col">
+                                <label style="margin-bottom:12px;"></label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="iconMatch" checked
+                                        onchange="toggleIconMatch(this.checked)"> Match
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label style="margin-top:10px;">Background Image</label>
+                    <label for="bgFile" id="bg-drop-zone" class="file-drop-zone" style="margin-bottom: 10px;">
+                        <span>Drag image or click</span>
+                    </label>
+                    <input type="file" id="bgFile" class="hidden-file-input" accept="image/*"
+                        onchange="processBgFile(this.files[0])">
+                    <button class="btn btn-s"
+                        style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:10px;border-radius:10px;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.04));border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 18px rgba(0,0,0,0.45);transition:transform .12s ease;"
+                        onclick="if(confirm('Remove background image?')) clearBg();"
+                        onmousedown="this.style.transform='translateY(1px)'"
+                        onmouseup="this.style.transform='translateY(0)'"
+                        onmouseleave="this.style.transform='translateY(0)'">
+                        <i class="fa-solid fa-trash" style="color:var(--danger);font-size:1rem;"></i>
+                        <span style="font-weight:700;color:var(--text);">Reset Background</span>
+                    </button>
+                </div>
+
+                <!-- Frame -->
+                <div class="group-label">Frame <span class="badge-pro">PRO</span></div>
+                <div class="locked-area" id="lock-cta">
+                    <div class="lock-badge">PRO</div>
+                    <label>Text (e.g., SCAN ME)</label>
+                    <input type="text" id="ctaText" placeholder="SCAN ME" oninput="updateFrame()">
+                    <div class="form-row" style="margin-top:10px;">
+                        <div class="col">
+                            <label>Color</label>
+                            <div class="color-picker-wrapper">
+                                <div class="color-preview" style="background-color: #000000;"
+                                    onclick="this.nextElementSibling.click()"></div>
+                                <input type="color" id="ctaFrameColor" value="#000000"
+                                    oninput="this.previousElementSibling.style.backgroundColor = this.value; updateFrame()">
+                            </div>
+                        </div>
+                        <div class="col"><label style="margin-bottom:28px;"></label><label class="checkbox-label"><input
+                                    type="checkbox" id="useCta" onchange="updateFrame()"> Enable</label></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BARCODE SETTINGS -->
+        <div id="bar-settings" class="hidden">
+            <div class="header">
+                <h2>Barcode Studio</h2>
+            </div>
+            <div class="controls-area">
+                <div class="form-row">
+                    <div class="col">
+                        <label>Type</label>
+                        <select id="barType" onchange="onBarTypeChange()">
+                            <option value="CODE128">Code 128 (Auto)</option>
+                            <option value="EAN13">EAN-13 (Products)</option>
+                            <option value="UPC">UPC</option>
+                            <option value="CODE39">Code 39</option>
+                            <option value="ITF14">ITF-14</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label>Data</label>
+                <input type="text" id="barData" value="DFWCode Rocks" oninput="updateBar()">
+
+                <div class="group-label">Appearance <span class="badge-pro">PRO</span></div>
+                <div class="locked-area">
+                    <div class="lock-badge">PRO</div>
+                    <div class="form-row">
+                        <div class="col">
+                            <label>Bars</label>
+                            <div class="color-picker-wrapper">
+                                <div class="color-preview" style="background-color: #000000;"
+                                    onclick="this.nextElementSibling.click()"></div>
+                                <input type="color" id="barCol" value="#000000"
+                                    oninput="this.previousElementSibling.style.backgroundColor = this.value; updateBar()">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label>Background</label>
+                            <div class="color-picker-wrapper">
+                                <div class="color-preview" style="background-color: #ffffff;"
+                                    onclick="this.nextElementSibling.click()"></div>
+                                <input type="color" id="barBg" value="#ffffff"
+                                    oninput="this.previousElementSibling.style.backgroundColor = this.value; updateBar()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="col"><label>Width</label><input type="number" id="barW" value="2" min="1" max="5"
+                                oninput="updateBar()"></div>
+                        <div class="col"><label>Height</label><input type="number" id="barH" value="100" min="20"
+                                oninput="updateBar()"></div>
+                    </div>
+
+                    <label class="checkbox-label" style="margin-top:10px;">
+                        <input type="checkbox" id="barTxt" checked onchange="updateBar()"> Show Text
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORY PANEL -->
+        <div id="history-panel" class="hidden">
+            <div class="header">
+                <h2>History</h2>
+                <button class="close-btn" onclick="toggleHistory()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="controls-area">
+                <button class="btn btn-s" style="width:100%; margin-bottom:15px;" onclick="HistorySystem.clear()">
+                    <i class="fa-solid fa-trash"></i> Clear History
+                </button>
+                <div id="history-list">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- BULK PANEL -->
+        <div id="bulk-panel" class="hidden">
+            <div class="header">
+                <h2>Bulk Generation</h2>
+                <button class="close-btn" onclick="toggleBulk()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="controls-area">
+                <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:15px;">
+                    Generate multiple QR codes at once. Enter one URL/Text per line.
+                    <br><span style="color:var(--gold)">PRO Feature</span>
+                </p>
+                <textarea id="bulk-input" rows="10"
+                    placeholder="https://site1.com&#10;https://site2.com&#10;Free text..."
+                    style="width:100%; background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.1); color:white; padding:10px; border-radius:6px; font-family:monospace; resize:vertical; margin-bottom:15px;"></textarea>
+                <button class="btn btn-p" id="btn-bulk-gen" style="width:100%; justify-content:center;"
+                    onclick="startBulkGen()">
+                    <i class="fa-solid fa-file-zipper"></i> Generate ZIP
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PREVIEW STAGE -->
+    <div class="stage">
+        <div class="card" id="cardContainer">
+            <div id="cta-text-top"
+                style="display: none; font-weight: 800; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 15px;">
+            </div>
+            <!-- QR Wrapper -->
+            <div id="qr-wrapper"></div>
+            <!-- Barcode Wrapper -->
+            <div id="bar-wrapper" class="hidden">
+                <svg id="bar-svg"></svg>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-p" onclick="download('png')"><i class="fa-solid fa-download"></i> PNG</button>
+            <button class="btn btn-s" onclick="download('jpg')">JPG</button>
+            <button class="btn btn-s" onclick="download('svg')"><i class="fa-solid fa-vector-square"></i> SVG</button>
+            <div style="width:1px; background:rgba(255,255,255,0.1); margin:0 5px;"></div>
+            <button class="btn btn-s" onclick="shareQR()" title="Share"><i class="fa-solid fa-share-nodes"></i></button>
+            <button class="btn btn-s" onclick="printQR()" title="Print"><i class="fa-solid fa-print"></i></button>
+        </div>
+    </div>
+
+    <!-- Main Logic -->
+    <script type="module" src="./src/main.js"></script>
+</body>
+
+</html>
