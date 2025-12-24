@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOT ARENA</title>
+    <style>
+        /* --- GENERAL STYLES --- */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
+        :root {
+            --bg-color: #1a1a2e;
+            --primary-color: #16213e;
+            --secondary-color: #0f3460;
+            --accent-color: #e94560;
+            --font-color: #dcdcdc;
+            --glow-color: rgba(233, 69, 96, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: var(--bg-color);
+            color: var(--font-color);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            gap: 20px;
+            min-height: 100vh;
+        }
+
+        /* --- LAYOUT & CONTAINERS --- */
+        .main-container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 1600px;
+        }
+
+        .game-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .ui-column {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 400px;
+        }
+
+        .panel {
+            background-color: var(--primary-color);
+            border: 1px solid var(--secondary-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        h1, h2, h3 {
+            color: var(--accent-color);
+            text-shadow: 0 0 5px var(--glow-color);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        /* --- MODAL STYLES --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* --- ARENA STYLES --- */
+        #arena {
+            background-color: #282c34;
+            border-radius: 8px;
+            box-shadow: 0 0 20px var(--glow-color), inset 0 0 15px rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--accent-color);
+        }
+
+        /* --- CONTROLS & UI --- */
+        .control-group {
+            margin-bottom: 20px;
+        }
+        .control-group-inline {
+            display: flex;
+            gap: 10px;
+        }
+        .control-group-inline > div {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--secondary-color);
+            background-color: var(--bg-color);
+            color: var(--font-color);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1em;
+            transition: all 0.2s ease;
+        }
+
+        input[type="color"] {
+            padding: 5px;
+            height: 40px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 8px var(--glow-color);
+        }
+
+        button {
+            cursor: pointer;
+            background-color: var(--accent-color);
+            color: #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #ff5e78;
+            box-shadow: 0 0 10px var(--glow-color);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        #bot-configs {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .bot-config-item {
+            border: 1px solid var(--secondary-color);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .bot-config-basic {
+            display: grid;
+            grid-template-columns: 30px 50px 1fr 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .bot-config-item summary {
+            cursor: pointer;
+            margin-top: 10px;
+            color: var(--accent-color);
+            font-size: 0.9em;
+        }
+
+        .bot-config-advanced {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            padding-top: 15px;
+            margin-top: 10px;
+            border-top: 1px solid var(--secondary-color);
+        }
+        .bot-config-advanced .control-group {
+            margin-bottom: 0;
+        }
+        .bot-config-advanced label {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        .bot-config-advanced input, .bot-config-advanced select {
+            padding: 5px;
+            font-size: 0.9em;
+        }
+        
+        .bot-config-item input[type="text"] {
+            font-size: 0.9em;
+        }
+        
+        /* --- SCOREBOARD & LOGS --- */
+        #scoreboard ul, #log ul {
+            list-style: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        #scoreboard li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--secondary-color);
+        }
+
+        .bot-score-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+        
+        .hp-bar-container {
+            width: 100px;
+            height: 10px;
+            background-color: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .hp-bar {
+            height: 100%;
+            background-color: #4caf50;
+            transition: width 0.3s ease;
+        }
+        .shield-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: rgba(0, 188, 212, 0.7);
+            transition: width 0.3s ease;
+        }
+        
+        #log li {
+            padding: 5px;
+            font-size: 0.9em;
+            opacity: 0.9;
+            border-bottom: 1px dotted var(--secondary-color);
+        }
+        
+        /* --- SUMMARY STYLES --- */
+        #summary-stats table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        #summary-stats th, #summary-stats td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--secondary-color);
+        }
+        #summary-stats th {
+            color: var(--accent-color);
+        }
+        .summary-chart-container {
+            margin-top: 25px;
+        }
+        .chart-bar-container {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            font-size: 0.9em;
+        }
+        .chart-label {
+            width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chart-bar {
+            height: 20px;
+            background-color: var(--accent-color);
+            color: #fff;
+            text-align: right;
+            padding-right: 5px;
+            line-height: 20px;
+            white-space: nowrap;
+            border-radius: 3px;
+            transition: width 0.5s ease-out;
+        }
+
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 1200px) {
+            .main-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .ui-column {
+                width: 100%;
+                max-width: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        
+        <div class="game-column">
+            <h1>BOT ARENA</h1>
+            <canvas id="arena" width="800" height="600"></canvas>
+        </div>
+
+        <div class="ui-column">
+            <div class="panel" id="controls">
+                <h2>Configuration</h2>
+                <div class="control-group-inline">
+                    <div>
+                        <label for="arena-width">Largeur Arène</label>
+                        <input type="number" id="arena-width" value="800" min="400" max="2000" step="50">
+                    </div>
+                    <div>
+                        <label for="arena-height">Hauteur Arène</label>
+                        <input type="number" id="arena-height" value="600" min="300" max="2000" step="50">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="bot-count">Nombre de Bots (2-200)</label>
+                    <input type="number" id="bot-count" value="4" min="2" max="200">
+                </div>
+                <div id="bot-configs"></div>
+                <div class="button-group">
+                    <button id="start-btn">Lancer la Bataille</button>
+                    <button id="reset-btn">Relancer</button>
+                </div>
+                 <div class="control-group" style="margin-top: 20px;">
+                    <label for="game-speed">Vitesse du jeu</label>
+                    <select id="game-speed">
+                        <option value="1">Normale (x1)</option>
+                        <option value="2">Rapide (x2)</option>
+                        <option value="4">Très Rapide (x4)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="panel" id="player-controls-info">
+                <h3>Contrôles du Joueur</h3>
+                <p>Sélectionnez un bot à contrôler. Utilisez <b>ZQSD/WASD</b> pour bouger, visez avec la <b>souris</b> et <b>cliquez</b> pour utiliser la capacité.</p>
+            </div>
+
+            <div class="panel" id="player-settings">
+                <h3>Paramètres du Joueur</h3>
+                <div class="control-group">
+                    <label for="player-attack-type">Type d'Attaque</label>
+                    <select id="player-attack-type"></select>
+                </div>
+                <div class="control-group">
+                    <label for="player-fire-mode">Mode de Tir</label>
+                    <select id="player-fire-mode">
+                        <option value="normal">Normal</option>
+                        <option value="clique">Clique (pas de délai)</option>
+                        <option value="rafale">Rafale (tir continu)</option>
+                        <option value="aimbot">Aim Bot (tir auto)</option>
+                    </select>
+                </div>
+                <div class="control-group" id="player-fire-rate-container" style="display: none;">
+                    <label for="player-fire-rate">Cadence de tir (secondes)</label>
+                    <input type="number" id="player-fire-rate" value="0.2" min="0.1" max="2" step="0.1">
+                </div>
+            </div>
+
+            <div class="panel" id="scoreboard">
+                <h2>Scoreboard</h2>
+                <ul id="scoreboard-list"></ul>
+            </div>
+
+            <div class="panel" id="log">
+                <h2>Journal des événements</h2>
+                <ul id="log-list"></ul>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="summary-modal" class="modal-overlay">
+        <div class="panel modal-content">
+            <h2 id="summary-title">Résumé de la Bataille</h2>
+            <p id="summary-winner"></p>
+            <div id="summary-stats"></div>
+            <div class="button-group" style="margin-top: 20px;">
+                <button id="close-summary-btn">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // =====================================================================
+        // CONFIG & DOM ELEMENTS
+        // =====================================================================
+        
+        const canvas = document.getElementById('arena');
+        const ctx = canvas.getContext('2d');
+
+        const botCountInput = document.getElementById('bot-count');
+        const botConfigsContainer = document.getElementById('bot-configs');
+        const startBtn = document.getElementById('start-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const gameSpeedSelect = document.getElementById('game-speed');
+        const scoreboardList = document.getElementById('scoreboard-list');
+        const logList = document.getElementById('log-list');
+        const arenaWidthInput = document.getElementById('arena-width');
+        const arenaHeightInput = document.getElementById('arena-height');
+
+        const summaryModal = document.getElementById('summary-modal');
+        const summaryWinner = document.getElementById('summary-winner');
+        const summaryStats = document.getElementById('summary-stats');
+        const closeSummaryBtn = document.getElementById('close-summary-btn');
+
+        const playerAttackTypeSelect = document.getElementById('player-attack-type');
+        const playerFireModeSelect = document.getElementById('player-fire-mode');
+        const playerFireRateInput = document.getElementById('player-fire-rate');
+        const playerFireRateContainer = document.getElementById('player-fire-rate-container');
+
+        let playerBot = null;
+        const keysPressed = {};
+        let mousePos = { x: 0, y: 0 };
+        let isMouseDown = false;
+
+        const BOT_RADIUS = 15;
+        const MAX_HP = 100;
+
+        // =====================================================================
+        // UTILITY FUNCTIONS
+        // =====================================================================
+
+        function getRandom(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function getDistance(obj1, obj2) {
+            const dx = obj1.x - obj2.x;
+            const dy = obj1.y - obj2.y;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        // =====================================================================
+        // CLASSES
+        // =====================================================================
+
+        /**
+         * Class GameEngine: Manages the entire game state and loop.
+         */
+        class GameEngine {
+            constructor() {
+                this.bots = [];
+                this.projectiles = [];
+                this.particles = [];
+                this.effects = []; // For explosions, etc.
+                this.traps = []; // For mines
+                this.isRunning = false;
+                this.gameSpeed = 1;
+                this.lastTimestamp = 0;
+                this.startTime = 0;
+                this.width = canvas.width;
+                this.height = canvas.height;
+            }
+
+            addBot(bot) {
+                this.bots.push(bot);
+            }
+
+            start(width, height) {
+                if (this.bots.length < 2) {
+                    this.log("Au moins 2 bots sont nécessaires pour commencer.");
+                    return;
+                }
+                this.width = width;
+                this.height = height;
+                canvas.width = this.width;
+                canvas.height = this.height;
+
+                this.isRunning = true;
+                this.log("La bataille commence !");
+                this.lastTimestamp = performance.now();
+                this.startTime = performance.now();
+                requestAnimationFrame(this.gameLoop.bind(this));
+                updateScoreboard(this.bots);
+            }
+
+            stop(winner) {
+                this.isRunning = false;
+                const duration = ((performance.now() - this.startTime) / 1000).toFixed(1);
+                this.log(`Bataille terminée ! Le vainqueur est ${winner.name} ! Durée: ${duration}s.`);
+                this.showSummary(winner, duration);
+            }
+
+            reset() {
+                playerBot = null;
+                this.bots = [];
+                this.projectiles = [];
+                this.particles = [];
+                this.effects = [];
+                this.traps = [];
+                this.isRunning = false;
+                ctx.clearRect(0, 0, this.width, this.height);
+                scoreboardList.innerHTML = "";
+                logList.innerHTML = "";
+                if (summaryModal) summaryModal.classList.remove('visible');
+                this.log("Arène réinitialisée. Configurez une nouvelle bataille.");
+            }
+
+            gameLoop(timestamp) {
+                if (!this.isRunning) return;
+                
+                const deltaTime = (timestamp - this.lastTimestamp) / 16.67; // Normalize to 60 FPS
+                this.lastTimestamp = timestamp;
+
+                for (let i = 0; i < this.gameSpeed; i++) {
+                   this.update(deltaTime);
+                }
+
+                this.draw();
+                
+                const aliveBots = this.bots.filter(bot => bot.isAlive);
+                if (aliveBots.length <= 1) {
+                    this.stop(aliveBots[0] || { name: "Personne" });
+                } else {
+                    requestAnimationFrame(this.gameLoop.bind(this));
+                }
+            }
+
+            update(deltaTime) {
+                // Update bots
+                this.bots.forEach(bot => {
+                    if (bot.isAlive) {
+                        const enemies = this.bots.filter(other => other !== bot && other.isAlive);
+                        bot.update(enemies, this, deltaTime);
+                    }
+                });
+
+                // Update projectiles
+                this.projectiles.forEach((p, index) => {
+                    p.update(deltaTime);
+                    if (p.isOffscreen(this.width, this.height)) {
+                        this.projectiles.splice(index, 1);
+                    } else {
+                        this.bots.forEach(bot => {
+                            if (bot.isAlive && bot !== p.owner && getDistance(p, bot) < BOT_RADIUS) {
+                                p.onHit(bot);
+                                this.projectiles.splice(index, 1);
+                            }
+                        });
+                    }
+                });
+
+                // Update traps (mines)
+                this.traps.forEach((trap, trapIndex) => {
+                    trap.update(deltaTime);
+                    this.bots.forEach(bot => {
+                        if (bot.isAlive && bot !== trap.owner && getDistance(trap, bot) < trap.triggerRadius) {
+                            trap.explode(this);
+                            this.traps.splice(trapIndex, 1);
+                        }
+                    });
+                });
+
+                // Update effects (bombs, explosions)
+                this.effects.forEach((effect, index) => {
+                    effect.update(deltaTime, this);
+                    if (effect.life <= 0) {
+                        this.effects.splice(index, 1);
+                    }
+                });
+
+                // Update particles
+                this.particles.forEach((p, index) => {
+                    p.update(deltaTime);
+                    if (p.life <= 0) {
+                        this.particles.splice(index, 1);
+                    }
+                });
+            }
+
+            draw() {
+                ctx.clearRect(0, 0, this.width, this.height);
+                
+                this.traps.forEach(t => t.draw(ctx));
+                this.bots.forEach(bot => bot.isAlive && bot.draw(ctx));
+                this.projectiles.forEach(p => p.draw(ctx));
+                this.effects.forEach(e => e.draw(ctx));
+                this.particles.forEach(p => p.draw(ctx));
+            }
+            
+            createParticles(x, y, color, count = 15) {
+                for (let i = 0; i < count; i++) {
+                    this.particles.push(new Particle(x, y, color));
+                }
+            }
+
+            log(message) {
+                const li = document.createElement('li');
+                li.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                logList.prepend(li);
+                if (logList.children.length > 50) {
+                    logList.removeChild(logList.lastChild);
+                }
+            }
+            
+            showSummary(winner, duration) {
+                summaryWinner.textContent = `Vainqueur: ${winner.name} en ${duration} secondes.`;
+                
+                const sortedBots = [...this.bots].sort((a, b) => {
+                    if (b.kills !== a.kills) return b.kills - a.kills;
+                    return b.damageDealt - a.damageDealt;
+                });
+
+                let statsHtml = `
+                    <h3>Statistiques Finales</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Bot</th>
+                                <th>Kills</th>
+                                <th>Dégâts Infligés</th>
+                                <th>Dégâts Reçus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                sortedBots.forEach(bot => {
+                    statsHtml += `
+                        <tr>
+                            <td>${bot.name}</td>
+                            <td>${bot.kills}</td>
+                            <td>${Math.round(bot.damageDealt)}</td>
+                            <td>${Math.round(bot.damageTaken)}</td>
+                        </tr>
+                    `;
+                });
+                statsHtml += '</tbody></table>';
+
+                const maxDamage = Math.max(...sortedBots.map(b => b.damageDealt));
+                statsHtml += '<div class="summary-chart-container"><h3>Dégâts Infligés</h3>';
+                sortedBots.filter(b => b.damageDealt > 0).forEach(bot => {
+                    const width = maxDamage > 0 ? (bot.damageDealt / maxDamage) * 100 : 0;
+                    statsHtml += `
+                        <div class="chart-bar-container">
+                            <div class="chart-label" title="${bot.name}">${bot.name}</div>
+                            <div class="chart-bar" style="width: 0%; background-color: ${bot.color};" data-width="${width.toFixed(1)}">
+                                ${Math.round(bot.damageDealt)}
+                            </div>
+                        </div>
+                    `;
+                });
+                statsHtml += '</div>';
+
+                summaryStats.innerHTML = statsHtml;
+                summaryModal.classList.add('visible');
+
+                setTimeout(() => {
+                    document.querySelectorAll('.chart-bar').forEach(bar => {
+                        bar.style.width = `${bar.dataset.width}%`;
+                    });
+                }, 100);
+            }
+        }
+
+        /**
+         * Class Bot: Represents a single AI entity in the arena.
+         */
+        class Bot {
+            constructor(name, color, strategy, x, y, options = {}) {
+                this.name = name;
+                this.color = color;
+                this.strategy = AI_STRATEGIES[strategy];
+                
+                this.x = x;
+                this.y = y;
+                this.radius = BOT_RADIUS;
+                this.angle = getRandom(0, Math.PI * 2);
+                this.isPlayer = false;
+                this.fireMode = 'normal';
+                this.fireRate = 0.5;
+                this.attackType = options.attackType || 'shot';
+
+                // Stats
+                this.maxHp = options.hp || MAX_HP;
+                this.hp = this.maxHp;
+                this.isAlive = true;
+                this.speed = options.speed || getRandom(1, 2.5);
+                this.range = options.range || getRandom(150, 300);
+                this.power = options.power || getRandom(3, 8);
+                this.statusEffects = [];
+                this.shield = 0;
+                this.maxShield = 50;
+
+                // Stat tracking
+                this.kills = 0;
+                this.damageDealt = 0;
+                this.damageTaken = 0;
+
+                this.target = null;
+                this.actionCooldown = 0;
+            }
+
+            draw(ctx) {
+                // Body
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                // Shadow/Glow
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 15;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Shield
+                if (this.shield > 0) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius + 2, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(0, 188, 212, ${this.shield / this.maxShield})`;
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                }
+
+                // Player indicator
+                if (this.isPlayer) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius + 6, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+
+                // "Turret" or direction indicator
+                const turretX = this.x + (this.radius * 0.8) * Math.cos(this.angle);
+                const turretY = this.y + (this.radius * 0.8) * Math.sin(this.angle);
+                ctx.beginPath();
+                ctx.arc(turretX, turretY, this.radius / 3, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.fill();
+
+                // Name
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.fillText(this.name, this.x, this.y - this.radius - 5);
+            }
+
+            update(enemies, game, deltaTime) {
+                if (this.actionCooldown > 0) {
+                    this.actionCooldown -= deltaTime;
+                }
+                this.updateStatusEffects(deltaTime);
+                
+                if (this.isPlayer) {
+                    this.updatePlayerControls(enemies, game, deltaTime);
+                } else {
+                    this.strategy(this, enemies, game);
+                }
+                
+                this.x = Math.max(this.radius, Math.min(game.width - this.radius, this.x));
+                this.y = Math.max(this.radius, Math.min(game.height - this.radius, this.y));
+            }
+
+            updateStatusEffects(deltaTime) {
+                for (let i = this.statusEffects.length - 1; i >= 0; i--) {
+                    const effect = this.statusEffects[i];
+                    effect.duration -= deltaTime;
+                    if (effect.type === 'poison') {
+                        this.takeDamage(effect.damage * deltaTime, effect.source, true);
+                    }
+                    if (effect.duration <= 0) {
+                        this.statusEffects.splice(i, 1);
+                    }
+                }
+            }
+
+            applyStatusEffect(effect) {
+                // Prevent stacking the same effect type
+                if (!this.statusEffects.some(e => e.type === effect.type)) {
+                    this.statusEffects.push(effect);
+                }
+            }
+
+            updatePlayerControls(enemies, game, deltaTime) {
+                let targetForAimBot = null;
+                if (this.fireMode === 'aimbot') {
+                    if (enemies.length > 0) {
+                        let closestEnemy = enemies.sort((a, b) => getDistance(this, a) - getDistance(this, b))[0];
+                        if (getDistance(this, closestEnemy) < this.range) {
+                            targetForAimBot = closestEnemy;
+                            this.angle = Math.atan2(closestEnemy.y - this.y, closestEnemy.x - this.x);
+                        } else {
+                            this.angle = Math.atan2(mousePos.y - this.y, mousePos.x - this.x);
+                        }
+                    }
+                } else {
+                    this.angle = Math.atan2(mousePos.y - this.y, mousePos.x - this.x);
+                }
+
+                // Firing (continuous modes)
+                if (this.fireMode === 'rafale' && isMouseDown) {
+                    this.attack(mousePos, game);
+                }
+                if (this.fireMode === 'aimbot' && targetForAimBot) {
+                    this.attack(targetForAimBot, game);
+                }
+
+                // Movement
+                let dx = 0;
+                let dy = 0;
+                if (keysPressed['z'] || keysPressed['w']) dy -= 1;
+                if (keysPressed['s']) dy += 1;
+                if (keysPressed['q'] || keysPressed['a']) dx -= 1;
+                if (keysPressed['d']) dx += 1;
+
+                // Normalize diagonal movement
+                if (dx !== 0 && dy !== 0) {
+                    const magnitude = Math.sqrt(dx * dx + dy * dy);
+                    dx /= magnitude;
+                    dy /= magnitude;
+                }
+
+                if (dx !== 0 || dy !== 0) {
+                    this.move(dx, dy, deltaTime);
+                }
+            }
+
+            move(dx, dy, deltaTime) {
+                let currentSpeed = this.speed;
+                if (this.statusEffects.some(e => e.type === 'slow')) {
+                    currentSpeed *= 0.5;
+                }
+                this.x += dx * currentSpeed * deltaTime;
+                this.y += dy * currentSpeed * deltaTime;
+            }
+
+            attack(target, game) {
+                if (this.actionCooldown > 0) return;
+                
+                const attackAbility = ATTACK_TYPES[this.attackType];
+                if (!attackAbility) return;
+
+                const success = attackAbility.execute(this, target, game);
+                if (success) {
+                    this.actionCooldown = attackAbility.cooldown * 60; // Cooldown in frames
+                    if (this.isPlayer) {
+                        if (this.fireMode === 'clique') this.actionCooldown = 0;
+                        if (this.fireMode === 'rafale' || this.fireMode === 'aimbot') {
+                            this.actionCooldown = this.fireRate * 60;
+                        }
+                    }
+                }
+            }
+
+            takeDamage(amount, attacker, isDoT = false) {
+                let damage = amount;
+                if (this.shield > 0) {
+                    const absorbed = Math.min(this.shield, damage);
+                    this.shield -= absorbed;
+                    damage -= absorbed;
+                }
+
+                this.hp -= damage;
+                if (!isDoT) this.damageTaken += amount; // Track full damage before shield
+                
+                if (attacker && !isDoT) {
+                    attacker.damageDealt += amount;
+                }
+
+                if (this.hp <= 0) {
+                    this.hp = 0;
+                    this.isAlive = false;
+                    if (attacker) {
+                        game.log(`${this.name} a été éliminé par ${attacker.name} !`);
+                        attacker.kills++;
+                    } else {
+                        game.log(`${this.name} a été éliminé !`);
+                    }
+                }
+                updateScoreboard(game.bots);
+            }
+        }
+
+        class Projectile {
+            constructor(owner, target, damage, onHitEffect = null) {
+                this.owner = owner;
+                this.damage = damage;
+                this.radius = 5;
+                this.speed = 5;
+                this.color = owner.color;
+                this.onHitEffect = onHitEffect;
+
+                const angle = Math.atan2(target.y - owner.y, target.x - owner.x);
+                this.x = owner.x + Math.cos(angle) * (BOT_RADIUS + this.radius);
+                this.y = owner.y + Math.sin(angle) * (BOT_RADIUS + this.radius);
+
+                this.dx = Math.cos(angle) * this.speed;
+                this.dy = Math.sin(angle) * this.speed;
+            }
+
+            update(deltaTime) {
+                this.x += this.dx * deltaTime;
+                this.y += this.dy * deltaTime;
+            }
+
+            draw(ctx) {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+
+            isOffscreen(width, height) {
+                return this.x < 0 || this.x > width || this.y < 0 || this.y > height;
+            }
+
+            onHit(targetBot) {
+                game.log(`${this.owner.name} a touché ${targetBot.name} !`);
+                targetBot.takeDamage(this.damage, this.owner);
+                game.createParticles(this.x, this.y, targetBot.color);
+                if (this.onHitEffect) {
+                    targetBot.applyStatusEffect({ ...this.onHitEffect, source: this.owner });
+                }
+            }
+        }
+        
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.radius = getRandom(1, 3);
+                this.life = getRandom(20, 50);
+                this.speed = getRandom(1, 4);
+                const angle = getRandom(0, Math.PI * 2);
+                this.dx = Math.cos(angle) * this.speed;
+                this.dy = Math.sin(angle) * this.speed;
+            }
+            
+            update(deltaTime) {
+                this.x += this.dx * deltaTime;
+                this.y += this.dy * deltaTime;
+                this.life -= deltaTime;
+            }
+            
+            draw(ctx) {
+                ctx.globalAlpha = this.life / 50;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+            }
+        }
+
+        class Bomb {
+            constructor(owner, x, y) {
+                this.owner = owner;
+                this.x = x;
+                this.y = y;
+                this.radius = 8;
+                this.life = 180; // 3 seconds
+                this.damage = 40;
+                this.explosionRadius = 80;
+            }
+            update(deltaTime, game) {
+                this.life -= deltaTime;
+                if (this.life <= 0) {
+                    this.explode(game);
+                }
+            }
+            draw(ctx) {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `hsl(${(this.life * 2) % 360}, 100%, 50%)`;
+                ctx.fill();
+            }
+            explode(game) {
+                game.effects.push(new Explosion(this.x, this.y, this.explosionRadius));
+                game.bots.forEach(bot => {
+                    if (bot.isAlive && getDistance(this, bot) < this.explosionRadius) {
+                        bot.takeDamage(this.damage, this.owner);
+                    }
+                });
+            }
+        }
+
+        class Mine {
+            constructor(owner, x, y) {
+                this.owner = owner;
+                this.x = x;
+                this.y = y;
+                this.radius = 6;
+                this.triggerRadius = 30;
+                this.damage = 50;
+                this.explosionRadius = 60;
+            }
+            update(deltaTime) {}
+            draw(ctx) {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.owner.color;
+                ctx.globalAlpha = 0.5;
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+            }
+            explode(game) {
+                game.effects.push(new Explosion(this.x, this.y, this.explosionRadius));
+                game.bots.forEach(bot => {
+                    if (bot.isAlive && bot !== this.owner && getDistance(this, bot) < this.explosionRadius) {
+                        bot.takeDamage(this.damage, this.owner);
+                    }
+                });
+            }
+        }
+
+        class Explosion {
+            constructor(x, y, radius) {
+                this.x = x;
+                this.y = y;
+                this.maxRadius = radius;
+                this.radius = 0;
+                this.life = 30; // 0.5 seconds
+            }
+            update(deltaTime) {
+                this.life -= deltaTime;
+                this.radius = this.maxRadius * (1 - this.life / 30);
+            }
+            draw(ctx) {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 165, 0, ${this.life / 30})`;
+                ctx.fill();
+            }
+        }
+        
+        // =====================================================================
+        // ATTACK TYPES
+        // =====================================================================
+        const ATTACK_TYPES = {
+            shot: {
+                name: 'Tir', cooldown: 1,
+                execute: (attacker, target, game) => {
+                    game.projectiles.push(new Projectile(attacker, target, attacker.power));
+                    return true;
+                }
+            },
+            melee: {
+                name: 'Mêlée', cooldown: 0.5,
+                execute: (attacker, target, game) => {
+                    let hit = false;
+                    game.bots.forEach(bot => {
+                        if (bot.isAlive && bot !== attacker && getDistance(attacker, bot) < 40) {
+                            bot.takeDamage(attacker.power * 1.5, attacker);
+                            game.createParticles(bot.x, bot.y, bot.color, 5);
+                            hit = true;
+                        }
+                    });
+                    return hit;
+                }
+            },
+            bomb: {
+                name: 'Bombe', cooldown: 5,
+                execute: (attacker, target, game) => {
+                    const angle = Math.atan2(target.y - attacker.y, target.x - attacker.x);
+                    const bombX = attacker.x + Math.cos(angle) * 50;
+                    const bombY = attacker.y + Math.sin(angle) * 50;
+                    game.effects.push(new Bomb(attacker, bombX, bombY));
+                    return true;
+                }
+            },
+            poison: {
+                name: 'Poison', cooldown: 3,
+                execute: (attacker, target, game) => {
+                    const effect = { type: 'poison', duration: 300, damage: attacker.power * 0.05 };
+                    game.projectiles.push(new Projectile(attacker, target, attacker.power / 2, effect));
+                    return true;
+                }
+            },
+            laser: {
+                name: 'Laser', cooldown: 4,
+                execute: (attacker, target, game) => {
+                    const angle = Math.atan2(target.y - attacker.y, target.x - attacker.x);
+                    const endX = attacker.x + Math.cos(angle) * attacker.range * 2;
+                    const endY = attacker.y + Math.sin(angle) * attacker.range * 2;
+                    
+                    game.bots.forEach(bot => {
+                        if (bot.isAlive && bot !== attacker) {
+                            // Simple line-circle collision check
+                            const dist = Math.abs((endY - attacker.y) * bot.x - (endX - attacker.x) * bot.y + endX * attacker.y - endY * attacker.x) / getDistance({x: attacker.x, y: attacker.y}, {x: endX, y: endY});
+                            if (dist < bot.radius) {
+                                bot.takeDamage(attacker.power * 3, attacker);
+                            }
+                        }
+                    });
+                    // Visual effect for laser
+                    const laserEffect = {
+                        life: 15,
+                        draw: (ctx) => {
+                            ctx.beginPath();
+                            ctx.moveTo(attacker.x, attacker.y);
+                            ctx.lineTo(endX, endY);
+                            ctx.strokeStyle = attacker.color;
+                            ctx.lineWidth = 3;
+                            ctx.globalAlpha = laserEffect.life / 15;
+                            ctx.stroke();
+                            ctx.globalAlpha = 1.0;
+                        },
+                        update: (dt) => { laserEffect.life -= dt; }
+                    };
+                    game.effects.push(laserEffect);
+                    return true;
+                }
+            },
+            shield: {
+                name: 'Bouclier', cooldown: 10,
+                execute: (attacker, target, game) => {
+                    attacker.shield = Math.min(attacker.maxShield, attacker.shield + 50);
+                    return true;
+                }
+            },
+            dash: {
+                name: 'Dash', cooldown: 3,
+                execute: (attacker, target, game) => {
+                    const angle = Math.atan2(target.y - attacker.y, target.x - attacker.x);
+                    const dashDistance = 100;
+                    attacker.x += Math.cos(angle) * dashDistance;
+                    attacker.y += Math.sin(angle) * dashDistance;
+                    game.bots.forEach(bot => {
+                        if (bot.isAlive && bot !== attacker && getDistance(attacker, bot) < 40) {
+                            bot.takeDamage(attacker.power, attacker);
+                        }
+                    });
+                    return true;
+                }
+            },
+            mine: {
+                name: 'Mine', cooldown: 6,
+                execute: (attacker, target, game) => {
+                    game.traps.push(new Mine(attacker, attacker.x, attacker.y));
+                    return true;
+                }
+            },
+            heal: {
+                name: 'Soin', cooldown: 12,
+                execute: (attacker, target, game) => {
+                    attacker.hp = Math.min(attacker.maxHp, attacker.hp + 40);
+                    updateScoreboard(game.bots);
+                    return true;
+                }
+            },
+            slow: {
+                name: 'Ralentir', cooldown: 4,
+                execute: (attacker, target, game) => {
+                    const effect = { type: 'slow', duration: 240 };
+                    game.projectiles.push(new Projectile(attacker, target, attacker.power / 3, effect));
+                    return true;
+                }
+            }
+        };
+
+        // =====================================================================
+        // AI STRATEGIES
+        // =====================================================================
+
+        const AI_STRATEGIES = {
+            berserker: function(bot, enemies, game) {
+                if (enemies.length === 0) return;
+                let closestEnemy = enemies.sort((a, b) => getDistance(bot, a) - getDistance(bot, b))[0];
+                if (closestEnemy) {
+                    bot.target = closestEnemy;
+                    const angle = Math.atan2(closestEnemy.y - bot.y, closestEnemy.x - bot.x);
+                    if (getDistance(bot, closestEnemy) < (ATTACK_TYPES[bot.attackType].range || bot.range)) {
+                        bot.angle = angle;
+                        bot.attack(closestEnemy, game);
+                    } else {
+                        bot.move(Math.cos(angle), Math.sin(angle), 1);
+                    }
+                }
+            },
+            sniper: function(bot, enemies, game) {
+                if (enemies.length === 0) return;
+                let closestEnemy = enemies.sort((a, b) => getDistance(bot, a) - getDistance(bot, b))[0];
+                bot.target = closestEnemy;
+                const distance = getDistance(bot, closestEnemy);
+                const angle = Math.atan2(closestEnemy.y - bot.y, closestEnemy.x - bot.x);
+                if (distance < bot.range * 0.7) {
+                    bot.move(-Math.cos(angle), -Math.sin(angle), 1);
+                } else if (distance <= bot.range) {
+                    bot.angle = angle;
+                    bot.attack(closestEnemy, game);
+                } else {
+                    bot.move(Math.cos(angle), Math.sin(angle), 1);
+                }
+            },
+            coward: function(bot, enemies, game) {
+                if (enemies.length === 0) return;
+                let closestEnemy = enemies.sort((a, b) => getDistance(bot, a) - getDistance(bot, b))[0];
+                const distance = getDistance(bot, closestEnemy);
+                if (distance < bot.range * 1.2) {
+                    const angle = Math.atan2(closestEnemy.y - bot.y, closestEnemy.x - bot.x);
+                    bot.move(-Math.cos(angle), -Math.sin(angle), 1);
+                } else {
+                    AI_STRATEGIES.random(bot, enemies, game);
+                }
+            },
+            random: function(bot, enemies, game) {
+                if (bot.actionCooldown <= 0 || !bot.isMoving) {
+                    const randomAngle = getRandom(0, Math.PI * 2);
+                    bot.moveDirection = { x: Math.cos(randomAngle), y: Math.sin(randomAngle) };
+                    bot.actionCooldown = getRandom(50, 150);
+                    bot.isMoving = true;
+                }
+                bot.move(bot.moveDirection.x, bot.moveDirection.y, 1);
+            }
+        };
+
+        // =====================================================================
+        // UI MANAGEMENT & INITIALIZATION
+        // =====================================================================
+
+        const game = new GameEngine();
+
+        function generateBotName() {
+            const part1 = ["Cyber", "Robo", "Mech", "Quantum", "Nano", "Giga", "Omega", "Void", "Star", "Iron", "Red", "Blue", "Green"];
+            const part2 = ["Striker", "Hunter", "Guard", "Reaper", "Juggernaut", "Spectre", "Golem", "Warden", "Slayer", "Phantom", "Bot", "Droid", "Unit"];
+            const num = Math.floor(Math.random() * 100);
+            return `${part1[Math.floor(Math.random() * part1.length)]} ${part2[Math.floor(Math.random() * part2.length)]} ${num}`;
+        }
+
+        function populateAttackTypeSelects() {
+            const optionsHtml = Object.keys(ATTACK_TYPES).map(key => `<option value="${key}">${ATTACK_TYPES[key].name}</option>`).join('');
+            playerAttackTypeSelect.innerHTML = optionsHtml;
+            return optionsHtml;
+        }
+
+        function generateBotConfigs(count) {
+            botConfigsContainer.innerHTML = '';
+            const defaultColors = ['#e94560', '#55b8e2', '#69e19c', '#f3d95c', '#c285e8', '#e88d67', '#ffffff', '#a8a8a8'];
+            const strategies = Object.keys(AI_STRATEGIES);
+            const attackTypeOptions = populateAttackTypeSelects();
+
+            for (let i = 0; i < count; i++) {
+                const botDiv = document.createElement('div');
+                botDiv.className = 'bot-config-item';
+                
+                const strategyOptions = strategies.map(s => `<option value="${s}">${s.charAt(0).toUpperCase() + s.slice(1)}</option>`).join('');
+
+                botDiv.innerHTML = `
+                    <div class="bot-config-basic">
+                        <input type="radio" name="player-select" class="player-select-radio" value="${i}" ${i === 0 ? 'checked' : ''} title="Contrôler ce bot">
+                        <input type="color" class="bot-color" value="${defaultColors[i % defaultColors.length]}">
+                        <input type="text" class="bot-name" value="${generateBotName()}">
+                        <select class="bot-strategy">${strategyOptions}</select>
+                    </div>
+                    <details>
+                        <summary>Personnalisation avancée</summary>
+                        <div class="bot-config-advanced">
+                            <div class="control-group">
+                                <label>Attaque</label>
+                                <select class="bot-attack-type">${attackTypeOptions}</select>
+                            </div>
+                            <div class="control-group">
+                                <label>HP (50-200)</label>
+                                <input type="number" class="bot-hp" value="100" min="50" max="200">
+                            </div>
+                            <div class="control-group">
+                                <label>Vitesse (1-5)</label>
+                                <input type="number" class="bot-speed" value="${getRandom(1.5, 3).toFixed(1)}" min="1" max="5" step="0.1">
+                            </div>
+                            <div class="control-group">
+                                <label>Vision (100-500)</label>
+                                <input type="number" class="bot-range" value="${Math.round(getRandom(150, 300))}" min="100" max="500">
+                            </div>
+                            <div class="control-group">
+                                <label>Puissance (1-15)</label>
+                                <input type="number" class="bot-power" value="${Math.round(getRandom(3, 8))}" min="1" max="15">
+                            </div>
+                        </div>
+                    </details>
+                `;
+                
+                botDiv.querySelector('.bot-strategy').value = strategies[i % strategies.length];
+                const attackTypes = Object.keys(ATTACK_TYPES);
+                botDiv.querySelector('.bot-attack-type').value = attackTypes[i % attackTypes.length];
+                botConfigsContainer.appendChild(botDiv);
+            }
+
+            const allConfigItems = botConfigsContainer.querySelectorAll('.bot-config-item');
+            allConfigItems.forEach(item => {
+                const radio = item.querySelector('.player-select-radio');
+                radio.addEventListener('change', () => {
+                    allConfigItems.forEach(innerItem => {
+                        const innerRadio = innerItem.querySelector('.player-select-radio');
+                        const innerSelect = innerItem.querySelector('.bot-strategy');
+                        innerSelect.disabled = innerRadio.checked;
+                        if (innerRadio.checked) {
+                            playerAttackTypeSelect.value = innerItem.querySelector('.bot-attack-type').value;
+                        }
+                    });
+                });
+            });
+            if (allConfigItems.length > 0) {
+                allConfigItems[0].querySelector('.bot-strategy').disabled = true;
+                playerAttackTypeSelect.value = allConfigItems[0].querySelector('.bot-attack-type').value;
+            }
+        }
+        
+        function updateScoreboard(bots) {
+            scoreboardList.innerHTML = "";
+            bots.forEach(bot => {
+                const li = document.createElement('li');
+                
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'bot-score-name';
+                
+                const colorIndicator = document.createElement('div');
+                colorIndicator.className = 'color-indicator';
+                colorIndicator.style.backgroundColor = bot.color;
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = bot.name;
+                
+                nameDiv.appendChild(colorIndicator);
+                nameDiv.appendChild(nameSpan);
+                
+                const hpContainer = document.createElement('div');
+                hpContainer.className = 'hp-bar-container';
+                const hpBar = document.createElement('div');
+                hpBar.className = 'hp-bar';
+                hpBar.style.width = `${(bot.hp / bot.maxHp) * 100}%`;
+                hpBar.style.backgroundColor = bot.hp / bot.maxHp > 0.5 ? '#4caf50' : bot.hp / bot.maxHp > 0.25 ? '#ffeb3b' : '#f44336';
+                
+                const shieldBar = document.createElement('div');
+                shieldBar.className = 'shield-bar';
+                shieldBar.style.width = `${(bot.shield / bot.maxShield) * 100}%`;
+
+                hpContainer.appendChild(hpBar);
+                hpContainer.appendChild(shieldBar);
+                
+                li.appendChild(nameDiv);
+                li.appendChild(hpContainer);
+                
+                scoreboardList.appendChild(li);
+            });
+        }
+
+        // Event Listeners
+        botCountInput.addEventListener('change', () => {
+            const count = Math.max(2, Math.min(200, parseInt(botCountInput.value, 10)));
+            botCountInput.value = count;
+            generateBotConfigs(count);
+        });
+
+        startBtn.addEventListener('click', () => {
+            if (game.isRunning) return;
+            game.reset();
+            
+            const playerIndex = parseInt(document.querySelector('input[name="player-select"]:checked').value, 10);
+            const configItems = document.querySelectorAll('.bot-config-item');
+            configItems.forEach((item, index) => {
+                const name = item.querySelector('.bot-name').value;
+                const color = item.querySelector('.bot-color').value;
+                const strategy = item.querySelector('.bot-strategy').value;
+                
+                const options = {
+                    hp: parseInt(item.querySelector('.bot-hp').value, 10),
+                    speed: parseFloat(item.querySelector('.bot-speed').value),
+                    range: parseInt(item.querySelector('.bot-range').value, 10),
+                    power: parseInt(item.querySelector('.bot-power').value, 10),
+                    attackType: item.querySelector('.bot-attack-type').value
+                };
+
+                const arenaWidth = parseInt(arenaWidthInput.value, 10);
+                const arenaHeight = parseInt(arenaHeightInput.value, 10);
+                const x = getRandom(BOT_RADIUS, arenaWidth - BOT_RADIUS);
+                const y = getRandom(BOT_RADIUS, arenaHeight - BOT_RADIUS);
+                
+                const bot = new Bot(name, color, strategy, x, y, options);
+                if (index === playerIndex) {
+                    bot.isPlayer = true;
+                    playerBot = bot;
+                    playerBot.fireMode = playerFireModeSelect.value;
+                    playerBot.fireRate = parseFloat(playerFireRateInput.value);
+                    playerBot.attackType = playerAttackTypeSelect.value;
+                    game.log(`Vous contrôlez ${bot.name}.`);
+                }
+                game.addBot(bot);
+            });
+            
+            game.start(parseInt(arenaWidthInput.value, 10), parseInt(arenaHeightInput.value, 10));
+        });
+        
+        resetBtn.addEventListener('click', () => {
+             game.reset();
+        });
+        
+        gameSpeedSelect.addEventListener('change', (e) => {
+            game.gameSpeed = parseInt(e.target.value, 10);
+            game.log(`Vitesse du jeu réglée sur x${game.gameSpeed}.`);
+        });
+
+        closeSummaryBtn.addEventListener('click', () => {
+            summaryModal.classList.remove('visible');
+        });
+
+        document.addEventListener('keydown', (e) => { keysPressed[e.key.toLowerCase()] = true; });
+        document.addEventListener('keyup', (e) => { keysPressed[e.key.toLowerCase()] = false; });
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mousePos.x = e.clientX - rect.left;
+            mousePos.y = e.clientY - rect.top;
+        });
+
+        canvas.addEventListener('mousedown', () => {
+            isMouseDown = true;
+            if (game.isRunning && playerBot && playerBot.isAlive) {
+                const mode = playerBot.fireMode;
+                if (mode === 'normal' || mode === 'clique') {
+                    playerBot.attack(mousePos, game);
+                }
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isMouseDown = false;
+        });
+
+        playerFireModeSelect.addEventListener('change', (e) => {
+            const mode = e.target.value;
+            if (mode === 'rafale' || mode === 'aimbot') {
+                playerFireRateContainer.style.display = 'block';
+            } else {
+                playerFireRateContainer.style.display = 'none';
+            }
+            if (playerBot) playerBot.fireMode = mode;
+        });
+
+        playerFireRateInput.addEventListener('change', (e) => {
+            if (playerBot) playerBot.fireRate = parseFloat(e.target.value);
+        });
+
+        playerAttackTypeSelect.addEventListener('change', e => {
+            const selectedAttack = e.target.value;
+            const playerRadio = document.querySelector('input[name="player-select"]:checked');
+            if (playerRadio) {
+                const playerConfigItem = playerRadio.closest('.bot-config-item');
+                playerConfigItem.querySelector('.bot-attack-type').value = selectedAttack;
+            }
+            if (playerBot) playerBot.attackType = selectedAttack;
+        });
+
+        // Initial setup
+        generateBotConfigs(parseInt(botCountInput.value, 10));
+        game.log("Bienvenue dans BOT ARENA ! Configurez vos bots et lancez la bataille.");
+    });
+    </script>
+</body>
+</html>
