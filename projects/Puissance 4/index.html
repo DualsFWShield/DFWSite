@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puissance 4 en Ligne</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #333;
+            margin-top: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(7, 60px);
+            gap: 5px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: fit-content;
+        }
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: #eee;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .player1 {
+            background-color: #ff4d4d;
+        }
+        .player2 {
+            background-color: #ffd700;
+        }
+        .message {
+            font-size: 20px;
+            margin: 20px;
+            color: #333;
+        }
+        .score {
+            font-size: 18px;
+            margin: 10px;
+        }
+        .buttons {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .auth-container, .game-container {
+            display: none;
+        }
+        .auth-form, .friend-form {
+            margin: 20px auto;
+            width: 300px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Interface de connexion -->
+    <div class="auth-container" id="auth-container">
+        <div class="auth-form">
+            <h2>Connexion / Inscription</h2>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Mot de passe">
+            <button id="login">Se connecter</button>
+            <button id="signup">S'inscrire</button>
+        </div>
+    </div>
+
+    <!-- Interface de jeu -->
+    <div class="game-container" id="game-container">
+        <h1>Puissance 4 en Ligne</h1>
+        <div class="message" id="message">Tour du Joueur 1</div>
+        <div class="score">Score Joueur 1: <span id="score1">0</span> | Score Joueur 2: <span id="score2">0</span></div>
+        <div class="grid" id="grid"></div>
+        <div class="buttons">
+            <button id="reset">Réinitialiser</button>
+            <button id="playIA">Jouer contre IA</button>
+            <button id="createGame">Créer une partie</button>
+            <button id="joinGame">Rejoindre une partie</button>
+            <button id="addFriend">Ajouter un ami</button>
+        </div>
+        <div class="friend-form" id="friend-form" style="display: none;">
+            <h3>Ajouter un ami</h3>
+            <input type="text" id="friendId" placeholder="ID de l'ami">
+            <button id="submitFriend">Ajouter</button>
+        </div>
+    </div>
+
+    <!-- Script Firebase avec type="module" -->
+    <script type="module">
+        // Importer les modules Firebase nécessaires
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+        import { getFirestore, collection, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+        import { getDatabase, ref, push, set, onValue, update } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+
+        // Configuration Firebase (remplacez par vos propres valeurs)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBmvD0pBikHRQlSj8VhGejiQufYsK2BsfQ",
+            authDomain: "puissance-4-80249.firebaseapp.com",
+            projectId: "puissance-4-80249",
+            storageBucket: "puissance-4-80249.firebasestorage.app",
+            messagingSenderId: "829085554865",
+            appId: "1:829085554865:web:6b2e12e2cd956d954dea90"
+        };
+
+        // Initialisation de Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const realtimeDb = getDatabase(app);
+
+        // Éléments DOM
+        const authContainer = document.getElementById('auth-container');
+        const gameContainer = document.getElementById('game-container');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginButton = document.getElementById('login');
+        const signupButton = document.getElementById('signup');
+        const grid = document.getElementById('grid');
+        const message = document.getElementById('message');
+        const score1 = document.getElementById('score1');
+        const score2 = document.getElementById('score2');
+        const resetButton = document.getElementById('reset');
+        const playIAButton = document.getElementById('playIA');
+        const createGameButton = document.getElementById('createGame');
+        const joinGameButton = document.getElementById('joinGame');
+        const addFriendButton = document.getElementById('addFriend');
+        const friendForm = document.getElementById('friend-form');
+        const friendIdInput = document.getElementById('friendId');
+        const submitFriendButton = document.getElementById('submitFriend');
+
+        let currentPlayer = 1;
+        let gameState = Array(6).fill().map(() => Array(7).fill(0));
+        let isPlayingIA = false;
+        let currentUser = null;
+        let currentGameId = null;
+
+        // Vérification de l'état d'authentification
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                currentUser = user;
+                authContainer.style.display = 'none';
+                gameContainer.style.display = 'block';
+                createGrid();
+            } else {
+                authContainer.style.display = 'block';
+                gameContainer.style.display = 'none';
+            }
+        });
+
+        // Connexion
+        loginButton.addEventListener('click', () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => console.log('Connecté'))
+                .catch(error => alert(error.message));
+        });
+
+        // Inscription
+        signupButton.addEventListener('click', () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(() => console.log('Inscrit'))
+                .catch(error => alert(error.message));
+        });
+
+        // Créer la grille
+        function createGrid() {
+            grid.innerHTML = '';
+            for (let row = 0; row < 6; row++) {
+                for (let col = 0; col < 7; col++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    cell.addEventListener('click', () => dropPiece(col));
+                    grid.appendChild(cell);
+                }
+            }
+            updateGrid();
+        }
+
+        // Placer un jeton
+        function dropPiece(column) {
+            for (let row = 5; row >= 0; row--) {
+                if (gameState[row][column] === 0) {
+                    gameState[row][column] = currentPlayer;
+                    if (currentGameId) {
+                        updateGameStateInFirebase();
+                    }
+                    updateGrid();
+                    if (checkWin(currentPlayer)) {
+                        message.textContent = `Joueur ${currentPlayer} gagne !`;
+                        updateScore(currentPlayer);
+                        return;
+                    } else if (isBoardFull()) {
+                        message.textContent = 'Égalité !';
+                        return;
+                    }
+                    currentPlayer = currentPlayer === 1 ? 2 : 1;
+                    message.textContent = `Tour du Joueur ${currentPlayer}`;
+                    if (isPlayingIA && currentPlayer === 2) {
+                        setTimeout(iaPlay, 500);
+                    }
+                    return;
+                }
+            }
+        }
+
+        // Mettre à jour la grille visuellement
+        function updateGrid() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                const row = cell.dataset.row;
+                const col = cell.dataset.col;
+                cell.classList.remove('player1', 'player2');
+                if (gameState[row][col] === 1) cell.classList.add('player1');
+                else if (gameState[row][col] === 2) cell.classList.add('player2');
+            });
+        }
+
+        // Vérifier la victoire
+        function checkWin(player) {
+            for (let row = 0; row < 6; row++) {
+                for (let col = 0; col < 4; col++) {
+                    if (gameState[row][col] === player &&
+                        gameState[row][col + 1] === player &&
+                        gameState[row][col + 2] === player &&
+                        gameState[row][col + 3] === player) {
+                        return true;
+                    }
+                }
+            }
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 7; col++) {
+                    if (gameState[row][col] === player &&
+                        gameState[row + 1][col] === player &&
+                        gameState[row + 2][col] === player &&
+                        gameState[row + 3][col] === player) {
+                        return true;
+                    }
+                }
+            }
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 4; col++) {
+                    if (gameState[row][col] === player &&
+                        gameState[row + 1][col + 1] === player &&
+                        gameState[row + 2][col + 2] === player &&
+                        gameState[row + 3][col + 3] === player) {
+                        return true;
+                    }
+                }
+            }
+            for (let row = 3; row < 6; row++) {
+                for (let col = 0; col < 4; col++) {
+                    if (gameState[row][col] === player &&
+                        gameState[row - 1][col + 1] === player &&
+                        gameState[row - 2][col + 2] === player &&
+                        gameState[row - 3][col + 3] === player) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Vérifier si la grille est pleine
+        function isBoardFull() {
+            for (let row = 0; row < 6; row++) {
+                for (let col = 0; col < 7; col++) {
+                    if (gameState[row][col] === 0) return false;
+                }
+            }
+            return true;
+        }
+
+        // Mettre à jour les scores
+        function updateScore(player) {
+            if (player === 1) score1.textContent = parseInt(score1.textContent) + 1;
+            else score2.textContent = parseInt(score2.textContent) + 1;
+        }
+
+        // Réinitialiser le jeu
+        resetButton.addEventListener('click', () => {
+            gameState = Array(6).fill().map(() => Array(7).fill(0));
+            currentPlayer = 1;
+            message.textContent = 'Tour du Joueur 1';
+            isPlayingIA = false;
+            currentGameId = null;
+            updateGrid();
+        });
+
+        // Jouer contre l'IA
+        playIAButton.addEventListener('click', () => {
+            resetButton.click();
+            isPlayingIA = true;
+            message.textContent = 'Tour du Joueur 1 (Vous) - IA activée';
+        });
+
+        // IA : choix aléatoire
+        function iaPlay() {
+            let availableColumns = [];
+            for (let col = 0; col < 7; col++) {
+                if (gameState[0][col] === 0) availableColumns.push(col);
+            }
+            if (availableColumns.length > 0) {
+                const randomCol = availableColumns[Math.floor(Math.random() * availableColumns.length)];
+                dropPiece(randomCol);
+            }
+        }
+
+        // Créer une partie en ligne
+        createGameButton.addEventListener('click', () => {
+            if (!currentUser) return alert('Veuillez vous connecter');
+            const gameRef = push(ref(realtimeDb, 'games'));
+            currentGameId = gameRef.key;
+            gameState = Array(6).fill().map(() => Array(7).fill(0));
+            const gameData = {
+                player1: currentUser.uid,
+                player2: null,
+                currentPlayer: 1,
+                gameState: gameState,
+                status: 'waiting'
+            };
+            set(gameRef, gameData).then(() => {
+                message.textContent = `Partie créée (ID: ${currentGameId}), en attente d’un joueur...`;
+                listenToGameState();
+            });
+        });
+
+        // Rejoindre une partie
+        joinGameButton.addEventListener('click', () => {
+            const gameId = prompt('Entrez l’ID de la partie à rejoindre :');
+            if (!gameId) return;
+            currentGameId = gameId;
+            const gameRef = ref(realtimeDb, `games/${gameId}`);
+            onValue(gameRef, snapshot => {
+                const game = snapshot.val();
+                if (!game || game.player2) return alert('Partie invalide ou complète');
+                update(gameRef, {
+                    player2: currentUser.uid,
+                    status: 'playing'
+                }).then(() => {
+                    listenToGameState();
+                });
+            }, { onlyOnce: true });
+        });
+
+        // Écouter les changements dans l’état de la partie
+        function listenToGameState() {
+            if (!currentGameId) return;
+            const gameRef = ref(realtimeDb, `games/${currentGameId}`);
+            onValue(gameRef, snapshot => {
+                const game = snapshot.val();
+                if (!game) return;
+                gameState = game.gameState;
+                currentPlayer = game.currentPlayer;
+                updateGrid();
+                message.textContent = `Tour du Joueur ${currentPlayer}`;
+                if (game.status === 'waiting') {
+                    message.textContent = 'En attente d’un deuxième joueur...';
+                }
+            });
+        }
+
+        // Mettre à jour l’état de la partie dans Firebase
+        function updateGameStateInFirebase() {
+            if (!currentGameId) return;
+            const gameRef = ref(realtimeDb, `games/${currentGameId}`);
+            update(gameRef, {
+                gameState: gameState,
+                currentPlayer: currentPlayer
+            });
+        }
+
+        // Ajouter un ami
+        addFriendButton.addEventListener('click', () => {
+            friendForm.style.display = 'block';
+        });
+        submitFriendButton.addEventListener('click', () => {
+            const friendId = friendIdInput.value;
+            if (!friendId) return alert('Entrez un ID valide');
+            setDoc(doc(db, 'friends', currentUser.uid, 'list', friendId), {
+                addedAt: serverTimestamp()
+            }).then(() => {
+                alert('Ami ajouté !');
+                friendForm.style.display = 'none';
+                friendIdInput.value = '';
+            }).catch(error => alert(error.message));
+        });
+    </script>
+</body>
+</html>

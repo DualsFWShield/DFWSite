@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contactez-nous - Everything on INTJ</title>
+    <meta name="description" content="Contactez l'équipe de Everything on INTJ pour toute question, suggestion ou collaboration concernant le type de personnalité INTJ.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" id="theme-stylesheet" href="css/light-mode.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body class="light-mode">
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <a href="index.html">Everything on INTJ</a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li class="dropdown">
+                        <a href="#">L'INTJ <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-content">
+                            <a href="qu-est-ce-qu-un-intj.html">Qu'est-ce qu'un INTJ ?</a>
+                            <a href="portrait-detaille.html">Portrait Détaillé</a>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#">INTJ & Le Monde <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-content">
+                            <a href="relations.html">Relations</a>
+                            <a href="travail-carriere.html">Travail & Carrière</a>
+                            <a href="social-stress.html">Social & Stress</a>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#">Exemples <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-content">
+                            <a href="films-series.html">Films & Séries</a>
+                            <a href="entrepreneurs.html">Entrepreneurs</a>
+                            <a href="scientifiques.html">Scientifiques</a>
+                        </div>
+                    </li>
+                    <li><a href="compatibilite.html">Compatibilité</a></li>
+                    <li><a href="ressources.html">Ressources</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="theme-switcher">
+                <i class="fas fa-sun" id="light-icon"></i>
+                <label class="switch">
+                    <input type="checkbox" id="theme-toggle">
+                    <span class="slider round"></span>
+                </label>
+                <i class="fas fa-moon" id="dark-icon"></i>
+            </div>
+            <button class="hamburger-menu" aria-label="Menu">
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="section-padded content-section">
+            <div class="container">
+                <h1 class="text-center">Contactez-nous</h1>
+                <p class="subtitle text-center">Des questions ? Des suggestions ? Nous sommes là pour vous aider.</p>
+
+                <div class="content-block">
+                    <h2>Envoyez-nous un message</h2>
+                    <p>Utilisez le formulaire ci-dessous pour nous contacter. Nous ferons de notre mieux pour vous répondre dans les plus brefs délais.</p>
+                    <form class="contact-form" action="#" method="POST">
+                        <div class="form-group">
+                            <label for="name">Votre Nom :</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Votre Email :</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Sujet :</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Votre Message :</label>
+                            <textarea id="message" name="message" rows="8" required></textarea>
+                        </div>
+                        <button type="submit" class="btn primary-btn">Envoyer le Message</button>
+                    </form>
+                    <style>
+                        /* Basic form styling for contact.html */
+                        .contact-form {
+                            max-width: 600px;
+                            margin: 0 auto;
+                            padding: 30px;
+                            background-color: var(--card-bg);
+                            border-radius: 8px;
+                            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+                        }
+
+                        .form-group {
+                            margin-bottom: 20px;
+                        }
+
+                        .form-group label {
+                            display: block;
+                            margin-bottom: 8px;
+                            font-weight: 600;
+                            color: var(--heading-color);
+                        }
+
+                        .contact-form input[type="text"],
+                        .contact-form input[type="email"],
+                        .contact-form textarea {
+                            width: 100%;
+                            padding: 12px;
+                            border: 1px solid var(--border-color);
+                            border-radius: 5px;
+                            font-family: 'Open Sans', sans-serif;
+                            font-size: 1em;
+                            background-color: var(--bg-color); /* Inherit from theme */
+                            color: var(--text-color); /* Inherit from theme */
+                            transition: border-color 0.3s ease;
+                        }
+
+                        .contact-form input[type="text"]:focus,
+                        .contact-form input[type="email"]:focus,
+                        .contact-form textarea:focus {
+                            border-color: var(--primary-color);
+                            outline: none;
+                        }
+
+                        .contact-form textarea {
+                            resize: vertical;
+                        }
+
+                        .contact-form button {
+                            width: auto;
+                            margin: 0;
+                        }
+                    </style>
+                </div>
+
+                <div class="content-block bg-alt">
+                    <h2>Informations de Contact Directes</h2>
+                    <p>Si vous préférez nous contacter directement ou avez une demande spécifique :</p>
+                    <ul>
+                        <li><i class="fas fa-envelope icon-small"></i> <strong>Email :</strong> <a href="mailto:contact@everythingonintj.com">contact@everythingonintj.com</a></li>
+                        <li><i class="fas fa-info-circle icon-small"></i> <strong>Informations générales :</strong> info@everythingonintj.com</li>
+                        <li><i class="fas fa-hands-helping icon-small"></i> <strong>Partenariats :</strong> partenariats@everythingonintj.com</li>
+                    </ul>
+                    <p>Nous sommes également actifs sur les réseaux sociaux. Suivez-nous pour les dernières mises à jour et discussions sur les INTJ !</p>
+                    <div class="social-icons text-center mt-4">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-section about">
+                <h3>Everything on INTJ</h3>
+                <p>Votre ressource complète sur le type de personnalité INTJ. Apprenez, comprenez et grandissez.</p>
+            </div>
+            <div class="footer-section links">
+                <h3>Liens Rapides</h3>
+                <ul>
+                    <li><a href="qu-est-ce-qu-un-intj.html">L'INTJ</a></li>
+                    <li><a href="compatibilite.html">Compatibilité</a></li>
+                    <li><a href="films-series.html">Exemples</a></li>
+                    <li><a href="ressources.html">Ressources</a></li>
+                </ul>
+            </div>
+            <div class="footer-section social">
+                <h3>Suivez-nous</h3>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Everything on INTJ. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script src="js/theme-switcher.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

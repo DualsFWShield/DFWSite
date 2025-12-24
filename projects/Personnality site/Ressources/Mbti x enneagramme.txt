@@ -1,0 +1,179 @@
+Vous vous faites fréquemment de nouveaux amis.
+→ Dimension : Type 7 (Optimisme, sociabilité)
+
+Les idées complexes et novatrices vous enthousiasment plus que les idées simples et directes.
+→ Dimension : Type 5 (Curiosité intellectuelle, innovation)
+
+Vous vous laissez plus facilement convaincre par des émotions que par des arguments factuels.
+→ Dimension : Type 2 (Émotions, empathie)
+
+Vos espaces de vie et de travail sont propres et organisés.
+→ Dimension : Type 1 (Ordre, perfectionnisme)
+
+Vous restez calme même sous une forte pression.
+→ Dimension : Type 9 (Calme, harmonie)
+
+L’idée de réseauter avec des étrangers vous intimide.
+→ Dimension : Type 6 (Anxiété, sécurité)
+
+Vous planifiez et accomplissez vos tâches bien avant la date limite.
+→ Dimension : Type 3 (Efficacité, réussite)
+
+Les histoires des gens vous touchent plus que les chiffres ou les données.
+→ Dimension : Type 4 (Sentiments, individualité)
+
+Vous aimez utiliser des outils de gestion comme des calendriers ou des listes.
+→ Dimension : Type 1 (Organisation, structure)
+
+Une petite erreur peut vous faire douter de vos capacités.
+→ Dimension : Type 6 (Doute, sécurité)
+
+Vous n'avez aucun mal à engager une conversation avec quelqu'un d'intéressant.
+→ Dimension : Type 7 (Sociabilité, énergie)
+
+Vous n’aimez pas discuter des interprétations d’œuvres créatives.
+→ Dimension : Type 5 (Logique, pragmatisme)
+
+Vous privilégiez les faits plutôt que les sentiments pour déterminer une ligne de conduite.
+→ Dimension : Type 8 (Pragmatisme, directivité)
+
+Vous laissez souvent la journée se dérouler sans planning.
+→ Dimension : Type 9 (Adaptabilité, spontanéité)
+
+Vous ne vous souciez pas trop de faire bonne impression.
+→ Dimension : Type 4 (Authenticité, individualisme)
+
+Vous appréciez participer à des activités en équipe.
+→ Dimension : Type 2 (Collaboration, soutien)
+
+Vous aimez expérimenter des approches nouvelles et non testées.
+→ Dimension : Type 7 (Innovation, enthousiasme)
+
+Vous attachez plus d'importance à la sensibilité qu'à l'honnêteté.
+→ Dimension : Type 2 (Empathie, relations)
+
+Vous êtes en quête de nouvelles expériences et connaissances.
+→ Dimension : Type 5 (Recherche, exploration)
+
+Vous avez tendance à vous inquiéter de l'avenir.
+→ Dimension : Type 6 (Inquiétude, anticipation)
+
+Vous appréciez davantage les passe-temps solitaires que ceux en groupe.
+→ Dimension : Type 5 (Introspection, solitude)
+
+Vous ne vous voyez pas écrire de la fiction.
+→ Dimension : Type 1 (Réalité, pragmatisme)
+
+Vous préférez des décisions efficaces, même si elles ignorent des aspects émotionnels.
+→ Dimension : Type 8 (Efficacité, pouvoir)
+
+Vous vous acquittez des tâches avant de vous détendre.
+→ Dimension : Type 3 (Efficacité, succès)
+
+En cas de désaccord, vous défendez votre point de vue au détriment des sentiments d’autrui.
+→ Dimension : Type 8 (Confrontation, autorité)
+
+Vous attendez souvent que les autres se présentent en premier dans les réunions sociales.
+→ Dimension : Type 9 (Retrait, passivité)
+
+Votre humeur peut changer très rapidement.
+→ Dimension : Type 4 (Émotions, variabilité)
+
+Vous ne vous laissez pas facilement influencer par des arguments émotionnels.
+→ Dimension : Type 5 (Objectivité, détachement)
+
+Vous faites souvent les choses à la dernière minute.
+→ Dimension : Type 7 (Spontanéité, procrastination)
+
+Vous aimez débattre de dilemmes éthiques.
+→ Dimension : Type 1 (Moralité, principes)
+
+Vous préférez être entouré plutôt que seul.
+→ Dimension : Type 7 (Sociabilité, énergie)
+
+Vous perdez intérêt quand la discussion devient trop théorique.
+→ Dimension : Type 8 (Pragmatisme, action)
+
+Vous suivez généralement votre cœur en cas de conflit entre les faits et les sentiments.
+→ Dimension : Type 2 (Émotions, relations)
+
+Vous avez du mal à maintenir un planning cohérent.
+→ Dimension : Type 9 (Procrastination, spontanéité)
+
+Vous remettez rarement en question vos choix.
+→ Dimension : Type 8 (Confiance, pouvoir)
+
+Vos amis vous décriraient comme extraverti et enjoué.
+→ Dimension : Type 7 (Enthousiasme, énergie)
+
+Vous êtes attiré par diverses formes d'expression créative.
+→ Dimension : Type 4 (Créativité, individualité)
+
+Vous basez vos choix sur des faits objectifs plutôt que sur des sentiments.
+→ Dimension : Type 5 (Rationalité, logique)
+
+Vous aimez faire des listes de choses à faire.
+→ Dimension : Type 1 (Organisation, perfectionnisme)
+
+Vous manquez rarement de confiance en vous.
+→ Dimension : Type 8 (Assurance, autorité)
+
+Vous évitez de passer des appels téléphoniques.
+→ Dimension : Type 6 (Anxiété, prudence)
+
+Vous aimez découvrir de nouveaux points de vue.
+→ Dimension : Type 5 (Curiosité, exploration)
+
+Vous établissez facilement des liens avec des personnes que vous venez de rencontrer.
+→ Dimension : Type 2 (Sociabilité, connexion)
+
+Si vos projets sont compromis, votre priorité est de reprendre le fil au plus vite.
+→ Dimension : Type 3 (Résilience, productivité)
+
+Vous êtes encore préoccupé par des erreurs passées.
+→ Dimension : Type 6 (Inquiétude, doute)
+
+Vous n'aimez pas discuter de théories sur l'avenir du monde.
+→ Dimension : Type 8 (Pragmatisme, action)
+
+Vos émotions vous contrôlent plus que vous ne les contrôlez.
+→ Dimension : Type 4 (Émotions, variabilité)
+
+Vous vous souciez davantage des sentiments des autres que de ce qui est logique.
+→ Dimension : Type 2 (Émotions, compassion)
+
+Votre style de travail est plus basé sur des impulsions d'énergie que sur un effort organisé.
+→ Dimension : Type 7 (Spontanéité, enthousiasme)
+
+Lorsque quelqu'un vous tient en haute estime, vous craignez de le décevoir.
+→ Dimension : Type 6 (Inquiétude, doute)
+
+Vous aimeriez avoir un travail vous obligeant à travailler seul.
+→ Dimension : Type 5 (Solitude, indépendance)
+
+Vous pensez que réfléchir à des questions philosophiques abstraites est une perte de temps.
+→ Dimension : Type 8 (Pragmatisme, action)
+
+Vous préférez les endroits animés aux lieux calmes et intimes.
+→ Dimension : Type 7 (Sociabilité, énergie)
+
+Si une décision vous semble juste, vous agissez sans besoin de preuves supplémentaires.
+→ Dimension : Type 8 (Confiance, autorité)
+
+Vous vous sentez souvent submergé.
+→ Dimension : Type 6 (Stress, anxiété)
+
+Vous terminez les tâches méthodiquement sans brûler les étapes.
+→ Dimension : Type 1 (Perfectionnisme, méthodologie)
+
+Vous préférez les tâches créatives aux tâches structurées.
+→ Dimension : Type 4 (Créativité, individualité)
+
+Vous vous fiez davantage à votre intuition émotionnelle qu’à votre raisonnement logique.
+→ Dimension : Type 2 (Intuition émotionnelle, empathie)
+
+Vous avez du mal à respecter les délais.
+→ Dimension : Type 9 (Procrastination, harmonie)
+
+Vous êtes confiant que les choses s'arrangeront pour vous.
+→ Dimension : Type 9 (Optimisme, paix intérieure)

@@ -1,0 +1,77 @@
+:root {
+    --primary-color: #4A90E2;
+    --secondary-color: #222e3c;
+    --accent-color: #FFD700;
+
+    --text-color: #e6e6e6;
+    --text-color-secondary: #b0b0b0;
+    --heading-color: #fff;
+
+    --bg-color: #181c23;
+    --bg-alt-color: #232a36;
+    --card-bg: #232a36;
+    --border-color: #2d3644;
+    --hover-color: #7bb6ff;
+    --link-color: #7bb6ff;
+
+    --header-bg: #232a36;
+    --logo-color: #fff;
+    --nav-link-color: #e6e6e6;
+    --dropdown-bg: #232a36;
+    --dropdown-link-color: #e6e6e6;
+    --dropdown-hover-bg: #2d3644;
+    --dropdown-hover-text: var(--primary-color);
+
+    --switch-bg: #444;
+    --switch-handle: #232a36;
+    --switch-checked-bg: var(--primary-color);
+
+    --footer-bg: #181c23;
+    --footer-text: #b0b0b0;
+
+    --shadow-light: 0 4px 15px rgba(0,0,0,0.25);
+    --shadow-medium: 0 8px 25px rgba(0,0,0,0.35);
+    --shadow-strong: 0 12px 35px rgba(0,0,0,0.5);
+}
+
+/* Pour améliorer le contraste général */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+header,
+nav,
+.section-padded,
+.bg-alt,
+.card,
+.example-card,
+.contact-form {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+footer {
+    background-color: var(--footer-bg);
+    color: var(--footer-text);
+}
+
+a {
+    color: var(--link-color);
+}
+a:hover {
+    color: var(--hover-color);
+}
+
+input, textarea, select {
+    background-color: var(--bg-alt-color);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+::-webkit-scrollbar {
+    background: #232a36;
+}
+::-webkit-scrollbar-thumb {
+    background: #444;
+}

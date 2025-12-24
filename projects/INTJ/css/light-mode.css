@@ -1,0 +1,41 @@
+/* dark-mode.css - Thème Sombre Premium pour Everything on INTJ */
+
+body.dark-mode {
+    /* Couleurs de Texte et Fond */
+    --text-color: #E6EBF0; /* Blanc-gris très clair */
+    --text-color-secondary: #C0C8D4; /* Gris-bleu clair */
+    --heading-color: #F8F9FA; /* Blanc pur pour les titres */
+    --bg-color: #0D162A; /* Bleu nuit très profond et riche */
+    --bg-alt-color: #121930; /* Un bleu nuit encore plus foncé pour l'alternance */
+    --card-bg: #1B263B; /* Bleu-gris foncé pour les cartes */
+    --border-color: #2C3C5A; /* Bordures plus foncées */
+    --shadow-light: rgba(0, 0, 0, 0.3);
+    --shadow-medium: rgba(0, 0, 0, 0.5);
+    --shadow-strong: rgba(0, 0, 0, 0.7);
+
+    /* Couleurs Primaires / Secondaires / Accentuation */
+    --primary-color: #6DAFFD; /* Bleu clair et lumineux pour le contraste */
+    --secondary-color: #B5CCFF; /* Bleu très clair */
+    --accent-color: #FFEB3B; /* Jaune or éclatant */
+    --hover-color: #A0CFFC; /* Bleu plus clair au survol */
+    --link-color: #7ABFFF; /* Liens bleus clairs */
+
+    /* Header et Navigation */
+    --header-bg: #0A111F; /* Bleu nuit le plus foncé pour le header */
+    --logo-color: #F8F9FA;
+    --nav-link-color: #E6EBF0;
+    --dropdown-bg: #1B263B;
+    --dropdown-link-color: #E6EBF0;
+    --dropdown-hover-bg: #2C3C5A;
+    --dropdown-hover-text: var(--primary-color);
+    --dropdown-mobile-bg: #121930;
+
+    /* Thème Switch */
+    --switch-bg: #4C5770; /* Gris foncé pour le fond */
+    --switch-handle: #E6EBF0; /* Poignée claire */
+    --switch-checked-bg: var(--primary-color); /* Bleu principal activé */
+
+    /* Footer */
+    --footer-bg: #0A111F;
+    --footer-text: #E6EBF0;
+}
