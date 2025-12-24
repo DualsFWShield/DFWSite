@@ -13,6 +13,9 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Three.js (For Dimensional Rifts) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
     <!-- Config Néo-Brutaliste -->
     <script>
         tailwind.config = {
@@ -87,9 +90,112 @@
         /* Aspect Ratio for Youtube */
         .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+
+        /* Boot Overlay */
+        #boot-overlay {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 2rem; font-family: 'Space Mono', monospace;
+            color: #20C20E; pointer-events: auto;
+        }
+        .boot-text { font-size: 14px; line-height: 1.5; }
+        
+        /* Glitch Effect */
+        .glitch-wrapper { position: relative; overflow: hidden; }
+        .glitch-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: inherit; background-size: cover; pointer-events: none; opacity: 0; mix-blend-mode: exclusion;
+        }
+        
+        /* Utility */
+        .skew-content { transform-style: preserve-3d; will-change: transform; }
+
+        /* God Mode */
+        .god-mode {
+            filter: invert(1) hue-rotate(180deg) contrast(1.2);
+        }
+        .god-mode .cursor-outline {
+            border-color: #ff00ff;
+            box-shadow: 0 0 20px #ff00ff;
+        }
+
+        /* CRT Overlay */
+        .crt-scanlines {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none; z-index: 9998;
+            opacity: 0.4;
+        }
+
+        /* Gravity Box */
+        #gravity-box {
+            position: fixed; top: 0; left: 0; width: 80px; height: 80px; background: #000;
+            border: 2px solid #fff; color: #fff; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; text-align: center; cursor: grab;
+            user-select: none; touch-action: none;
+            box-shadow: 4px 4px 0 #ccff00;
+        }
+        #gravity-box:active { cursor: grabbing; box-shadow: 2px 2px 0 #ccff00; }
+        
+        /* True RGB/CMY Split */
+        .cmy-wrapper { position: relative; display: inline-block; mix-blend-mode: normal; }
+        .cmy-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; mix-blend-mode: multiply;
+            transition: transform 0.1s cubic-bezier(0.2, 0, 0.4, 1);
+        }
+        .cmy-layer.cyan { color: #00FFFF; transform: translate(calc(var(--rx, 0) * -1.5px), calc(var(--ry, 0) * -1.5px)); }
+        .cmy-layer.magenta { color: #FF00FF; transform: translate(calc(var(--rx, 0) * 0px), calc(var(--ry, 0) * 1.5px)); }
+        .cmy-layer.yellow { color: #FFFF00; transform: translate(calc(var(--rx, 0) * 1.5px), calc(var(--ry, 0) * -1.5px)); }
+        .cmy-base { color: transparent; position: relative; z-index: 10; } /* Invisible text for accessibility/layout */
+        
     </style>
 </head>
-<body class="font-mono antialiased">
+<body class="font-mono antialiased overflow-hidden">
+    <!-- 3D WORLD -->
+    <canvas id="world-canvas"></canvas>
+
+    <!-- GRAVITY BOX -->
+    <div id="gravity-box">
+        <span class="pointer-events-none">DATA_DISK<br>v1.0</span>
+    </div>
+
+    <!-- 
+    
+    ██████╗ ██╗   ██╗ █████╗ ██╗     ███████╗    ███████╗██╗    ██╗    ███████╗██╗  ██╗██╗███████╗██╗     ██████╗ 
+    ██╔══██╗██║   ██║██╔══██╗██║     ██╔════╝    ██╔════╝██║    ██║    ██╔════╝██║  ██║██║██╔════╝██║     ██╔══██╗
+    ██║  ██║██║   ██║███████║██║     ███████╗    █████╗  ██║ █╗ ██║    ███████╗███████║██║█████╗  ██║     ██║  ██║
+    ██║  ██║██║   ██║██╔══██║██║     ╚════██║    ██╔══╝  ██║███╗██║    ╚════██║██╔══██║██║██╔══╝  ██║     ██║  ██║
+    ██████╔╝╚██████╔╝██║  ██║███████╗███████║    ██║     ╚███╔███╔╝    ███████║██║  ██║██║███████╗███████╗██████╔╝
+    ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝    ╚═╝      ╚══╝╚══╝     ╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝╚═════╝ 
+    
+    > SYSTEM_ROOT_ACCESS_GRANTED
+    > WELCOME_TO_THE_SOURCE
+    
+    -->
+
+    <!-- GLOBAL GRID OVERLAY -->
+    <div class="fixed inset-0 opacity-10 pointer-events-none z-0" style="background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+    <!-- CRT EFFECT -->
+    <div class="crt-scanlines"></div>
+
+    <!-- BOOT OVERLAY -->
+    <div id="boot-overlay">
+        <div id="boot-log" class="flex flex-col gap-1 mb-8 max-w-2xl">
+            <!-- Log items injected via JS -->
+        </div>
+        <div class="w-full max-w-md bg-gray-900 h-1 mb-2">
+            <div id="boot-progress" class="bg-terminal-green h-full w-0"></div>
+        </div>
+        <div class="flex justify-between items-end w-full max-w-md">
+            <p class="animate-pulse text-xs">SYSTEM_INITIALIZATION_SEQUENCE...</p>
+            <p class="text-xs">v2.5.0-RC1</p>
+        </div>
+        
+    </div>
 
     <!-- CURSOR -->
     <div class="cursor-dot"></div>
@@ -118,9 +224,21 @@
                     <span class="w-3 h-3 bg-red-600 rounded-full animate-pulse"></span>
                     <p class="text-lg font-bold font-mono">ETHICAL HACKER // FULL STACK</p>
                 </div>
-                <h1 class="font-display text-[15vw] leading-[0.8] tracking-tighter uppercase break-all reveal-text">
-                    DUALSFW<br><span class="text-stroke">SHIELD</span>
-                </h1>
+                <!-- TRUE CMY SPLIT APPLIED HERE -->
+                <div id="hero-title-container" class="cmy-wrapper font-display text-[15vw] leading-[0.8] tracking-tighter uppercase break-all reveal-text cursor-crosshair">
+                   <h1 class="cmy-base">
+                       DUALSFW<br><span class="text-stroke">SHIELD</span>
+                   </h1>
+                   <div class="cmy-layer cyan" aria-hidden="true">
+                       DUALSFW<br><span>SHIELD</span>
+                   </div>
+                   <div class="cmy-layer magenta" aria-hidden="true">
+                       DUALSFW<br><span>SHIELD</span>
+                   </div>
+                   <div class="cmy-layer yellow" aria-hidden="true">
+                       DUALSFW<br><span>SHIELD</span>
+                   </div>
+                </div>
                 
                 <div class="mt-12 flex flex-col md:flex-row justify-between items-end border-t-4 border-black pt-6 reveal-text">
                     <p class="max-w-md text-sm md:text-base mb-6 md:mb-0 font-bold">
@@ -470,6 +588,12 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- TERMINAL INPUT -->
+                <div class="mt-4 border-t border-terminal-green pt-2 flex items-center gap-2">
+                    <span class="text-terminal-green animate-pulse">guest@dualsfw:~#</span>
+                    <input type="text" id="terminal-input" class="bg-transparent border-none outline-none text-terminal-green font-mono w-full uppercase placeholder-terminal-green/30" placeholder="Type 'help' for commands..." autocomplete="off" spellcheck="false">
+                </div>
             </div>
         </section>
 
@@ -496,7 +620,7 @@
                         </a>
                     </div>
                     <div class="text-right font-bold font-mono">
-                        <p>DUALS.FW_SHIELD // 2025</p>
+                        <p>DUALSFWSHIELD // 2025</p>
                         <p>SECURE CONNECTION ESTABLISHED.</p>
                     </div>
                 </div>
@@ -513,22 +637,176 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             
-            // 1. INIT SCROLL (LENIS)
+            // --- 0. BOOT SEQUENCE ---
+            const bootOverlay = document.getElementById('boot-overlay');
+            const bootLog = document.getElementById('boot-log');
+            const bootBar = document.getElementById('boot-progress');
+            const logs = [
+                "INITIALIZING_KERNEL...",
+                "LOADING_MODULES: [GSAP, LENIS, TAILWIND]...",
+                "CHECKING_INTEGRITY... OK",
+                "ESTABLISHING_SECURE_CONNECTION...",
+                "MOUNTING_FILE_SYSTEM...",
+                "ACCESS_GRANTED."
+            ];
+
+            let logIndex = 0;
+            // Reveal Boot Overlay contents
+            gsap.to("#boot-overlay", {opacity: 1, duration: 0});
+
+            const logInterval = setInterval(() => {
+                if (logIndex < logs.length) {
+                    const p = document.createElement('p');
+                    p.className = 'boot-text font-mono text-xs text-terminal-green';
+                    p.innerText = `> ${logs[logIndex]}`;
+                    bootLog.appendChild(p);
+                    gsap.fromTo(p, {opacity:0, x: -10}, {opacity:1, x:0, duration:0.1});
+                    logIndex++;
+                    bootLog.scrollTop = bootLog.scrollHeight;
+                } else {
+                    clearInterval(logInterval);
+                }
+            }, 250);
+
+            // Progress Bar Animation
+            gsap.to(bootBar, {
+                width: "100%", 
+                duration: 2.2, 
+                ease: "power2.inOut",
+                onComplete: () => {
+                    setTimeout(hideBootOverlay, 400);
+                }
+            });
+
+            function hideBootOverlay() {
+                // Curtain Reveal
+                gsap.to(bootOverlay, {
+                    yPercent: -100,
+                    duration: 1.0,
+                    ease: "power4.inOut",
+                    onComplete: () => {
+                        document.body.classList.remove('overflow-hidden');
+                        bootOverlay.style.display = 'none';
+                        startSiteAnimations();
+                    }
+                });
+            }
+
+            // --- 1. CORE SCROLL (LENIS) & VELOCITY SKEW ---
             const lenis = new Lenis({
                 duration: 1.2,
                 easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
                 smooth: true,
             });
+            
+            const mainContent = document.querySelector('main');
+            
+            lenis.on('scroll', (e) => {
+                // Velocity Skew Effect (Desktop Only)
+                if(window.innerWidth > 768 && mainContent) {
+                    gsap.to(mainContent, {
+                        skewY: e.velocity * 0.05,
+                        duration: 0.2,
+                        ease: "power1.out"
+                    });
+                }
+            });
+
             function raf(time) {
                 lenis.raf(time);
                 requestAnimationFrame(raf);
             }
             requestAnimationFrame(raf);
 
-            // Intégration GSAP
             gsap.registerPlugin(ScrollTrigger);
 
-            // 2. CURSEUR
+            // --- 2. MAIN SITE ANIMATIONS (TRIGGERED AFTER BOOT) ---
+            function startSiteAnimations() {
+                
+                // Hero Reveal
+                gsap.from('.reveal-text', { 
+                    y: 50, 
+                    opacity: 0, 
+                    duration: 1, 
+                    stagger: 0.1, 
+                    ease: "power2.out",
+                });
+                
+                // --- HACKER TEXT EFFECT ---
+                initHackerText();
+                
+                // --- MAGNETIC BUTTONS ---
+                initMagneticButtons();
+            }
+
+            function initHackerText() {
+                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;':,./<>?";
+                // Target generic headers and links
+                const targets = document.querySelectorAll('h2, .hover-trigger, .font-display');
+                
+                targets.forEach(el => {
+                   if(!el.textContent.trim() || el.querySelectorAll('*').length > 0) return; // Skip if has children or empty
+                   
+                   const originalText = el.innerText;
+                   
+                   el.addEventListener('mouseenter', () => {
+                       let iterations = 0;
+                       clearInterval(el.interval);
+                       
+                       el.interval = setInterval(() => {
+                           el.innerText = el.innerText.split('')
+                               .map((letter, index) => {
+                                   if(index < iterations) return originalText[index];
+                                   return chars[Math.floor(Math.random() * chars.length)];
+                               })
+                               .join('');
+                           
+                           if(iterations >= originalText.length) { 
+                               clearInterval(el.interval);
+                               el.innerText = originalText; // Ensure clean end
+                           }
+                           
+                           iterations += 1/2; 
+                       }, 30);
+                   });
+                });
+            }
+
+            function initMagneticButtons() {
+                if (window.matchMedia("(pointer: fine)").matches) {
+                    // Make sure these elements exist and are relatively positioned if needed
+                    const magnets = document.querySelectorAll('.magnetic-btn, .group'); 
+                    
+                    magnets.forEach(btn => {
+                        btn.addEventListener('mousemove', (e) => {
+                            const rect = btn.getBoundingClientRect();
+                            const x = e.clientX - rect.left - rect.width / 2;
+                            const y = e.clientY - rect.top - rect.height / 2;
+                            
+                            // Apply force
+                            gsap.to(btn, { 
+                                x: x * 0.15, 
+                                y: y * 0.15, 
+                                duration: 0.3, 
+                                ease: "power2.out" 
+                            });
+                        });
+
+                        btn.addEventListener('mouseleave', () => {
+                            gsap.to(btn, { 
+                                x: 0, 
+                                y: 0, 
+                                duration: 0.5, 
+                                ease: "elastic.out(1, 0.3)" 
+                            });
+                        });
+                    });
+                }
+            }
+
+            // --- 3. GLOBAL UTILS ---
+            
+            // Cursor Logic
             if (window.matchMedia("(pointer: fine)").matches) {
                 const cursorDot = document.querySelector('.cursor-dot');
                 const cursorOutline = document.querySelector('.cursor-outline');
@@ -538,26 +816,16 @@
                     gsap.to(cursorOutline, { x: e.clientX, y: e.clientY, duration: 0.15 });
                 });
 
-                document.querySelectorAll('a, button, .hover-trigger, tr').forEach(trigger => {
+                document.querySelectorAll('a, button, .hover-trigger, tr, article').forEach(trigger => {
                     trigger.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
                     trigger.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
                 });
             }
 
-            // 3. ANIMATIONS HERO (DIRECT)
-            gsap.from('.reveal-text', { 
-                y: 50, 
-                opacity: 0, 
-                duration: 1, 
-                stagger: 0.1, 
-                ease: "power2.out",
-                delay: 0.2 
-            });
-
             // Marquee
             gsap.to(".marquee-content", { xPercent: -50, repeat: -1, duration: 20, ease: "linear" });
 
-            // Terminal Rows
+            // Terminal Scroll Trigger
             const terminalRows = document.querySelectorAll("tbody tr");
             if (terminalRows.length > 0) {
                 gsap.from(terminalRows, {
@@ -571,6 +839,398 @@
                     }
                 });
             }
+
+            // --- 4. EASTER EGGS & INTERACTIVITY ---
+            
+            // A. KONAMI CODE
+            // Normalized key codes for better compatibility
+            const konamiCode = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
+            let konamiIndex = 0;
+
+            document.addEventListener('keydown', (e) => {
+                const key = e.key.toLowerCase();
+                
+                if (key === konamiCode[konamiIndex]) {
+                    konamiIndex++;
+                    if (konamiIndex === konamiCode.length) {
+                        activateGodMode();
+                        konamiIndex = 0;
+                    }
+                } else {
+                    // Reset if miss, but allow restarting immediately if the key matches the first key
+                    konamiIndex = (key === konamiCode[0]) ? 1 : 0;
+                }
+            });
+
+            function activateGodMode() {
+                document.body.classList.toggle('god-mode');
+                const isGod = document.body.classList.contains('god-mode');
+                
+                if (isGod) {
+                    console.log("GOD MODE ACTIVATED");
+                    // Visual changes handled by CSS, but let's add some chaos
+                    gsap.to("body", { filter: "invert(1) hue-rotate(180deg)", duration: 0.5 });
+                    alert("⚠️ GOD MODE ACTIVATED ⚠️\nAdmin access granted.");
+                } else {
+                    gsap.to("body", { filter: "none", duration: 0.5 });
+                }
+            }
+
+            // B. INTERACTIVE TERMINAL
+            const termInput = document.getElementById('terminal-input');
+            const termTable = document.querySelector('tbody');
+            
+            termInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const cmd = termInput.value.trim().toLowerCase();
+                    termInput.value = '';
+                    handleCommand(cmd);
+                }
+            });
+
+            function handleCommand(cmd) {
+                // Flash input line
+                gsap.fromTo(termInput, { color: '#fff' }, { color: '#20C20E', duration: 0.2 });
+
+                switch(cmd) {
+                    case 'help':
+                        alert("AVAILABLE COMMANDS:\n> ls - List projects\n> clear - Clear terminal (fake)\n> whoami - Current user info\n> sudo - Try admin access\n> matrix - Enter the matrix");
+                        break;
+                    case 'ls':
+                        // Flash the table rows
+                        gsap.fromTo("tbody tr", { opacity: 0, x: -20 }, { opacity: 1, x: 0, stagger: 0.05, duration: 0.3 });
+                        break;
+                    case 'clear':
+                        // Just hide rows temporarily
+                        gsap.to("tbody tr", { opacity: 0, duration: 0.2 });
+                        setTimeout(() => gsap.to("tbody tr", { opacity: 1, duration: 1 }), 1000);
+                        break;
+                    case 'whoami':
+                        alert("USER: GUEST\nROLE: OBSERVER\nIP: ::1");
+                        break;
+                    case 'sudo':
+                        alert("ACCESS DENIED: You didn't say the magic word.");
+                        break;
+                    case 'matrix':
+                        window.open('https://dualsfwshield.github.io/Bot-Arena/'); // Redirect to a "matrix" like project or just toggle god mode
+                        break;
+                    case 'konami':
+                         alert("Don't type it, DO it.");
+                         break;
+                    default:
+                        // No-op or error
+                        termInput.placeholder = `COMMAND NOT FOUND: ${cmd}`;
+                        setTimeout(() => termInput.placeholder = "Type 'help' for commands...", 2000);
+                }
+            }
+
+            // A. TRUE CMY TITLE SPLIT
+            const titleContainer = document.getElementById('hero-title-container');
+            if (titleContainer) {
+                document.addEventListener('mousemove', (e) => {
+                    const rect = titleContainer.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    
+                    // Normalize -1 to 1
+                    const percentX = (e.clientX - centerX) / (window.innerWidth / 2);
+                    const percentY = (e.clientY - centerY) / (window.innerHeight / 2);
+
+                    // Update custom props for offsets
+                    titleContainer.style.setProperty('--rx', percentX * 15);
+                    titleContainer.style.setProperty('--ry', percentY * 15);
+                });
+            }
+
+            // B. GRAVITY BOX PHYSICS + WORMHOLE
+            const box = document.getElementById('gravity-box');
+            
+            // Initial position (center-ish)
+            let boxState = { 
+                x: window.innerWidth * 0.7, 
+                y: window.innerHeight * 0.3, 
+                vx: 0, 
+                vy: 0, 
+                isDragging: false 
+            };
+            
+            // Tuned Physics Constants (Restored)
+            const gravity = 0.5;
+            const friction = 0.99; // Super slick
+            const bounce = -0.95;  // Super bouncy
+
+
+            // Wormhole Sync: Check if we are receiving an object
+            const pendingWormhole = localStorage.getItem('wormhole_transit');
+            if (pendingWormhole) {
+                const data = JSON.parse(pendingWormhole);
+                const now = Date.now();
+                // Expire after 2 seconds to prevent old ghosts
+                if (now - data.timestamp < 2000) {
+                    // Spawn from opposite side
+                    boxState.y = data.y;
+                    boxState.x = (data.side === 'right') ? -70 : window.innerWidth - 10;
+                    boxState.vx = data.vx;
+                    boxState.vy = data.vy;
+                    // Clear it
+                    localStorage.removeItem('wormhole_transit');
+                }
+            }
+
+            // Mouse Events
+            box.addEventListener('mousedown', (e) => {
+                boxState.isDragging = true;
+                boxState.vx = 0;
+                boxState.vy = 0;
+            });
+            window.addEventListener('mouseup', () => { boxState.isDragging = false; });
+            
+            window.addEventListener('mousemove', (e) => {
+                if (boxState.isDragging) {
+                    boxState.vx = (e.clientX - boxState.x) * 0.4;
+                    boxState.vy = (e.clientY - boxState.y) * 0.4;
+                    boxState.x = e.clientX - 40;
+                    boxState.y = e.clientY - 40;
+                }
+            });
+
+            function updatePhysics() {
+                if (!boxState.isDragging && box.style.display !== 'none') {
+                    boxState.vy += gravity;
+                    boxState.vx *= friction;
+                    boxState.vy *= friction;
+
+                    boxState.x += boxState.vx;
+                    boxState.y += boxState.vy;
+
+                    // SCREEN SPACE LOGIC
+                    // We need to account for browser UI (tabs/address bar) to get accurate Screen Y
+                    const headerHeight = window.outerHeight - window.innerHeight;
+                    const screenX = window.screenX + boxState.x + 40; 
+                    const screenY = window.screenY + headerHeight + boxState.y + 40;
+                    
+                    // Check if we left our window rect (slightly padded)
+                    if (boxState.x < -40 || boxState.x > window.innerWidth || boxState.y < -40 || boxState.y > window.innerHeight) {
+                        
+                        // Check if we are inside another window
+                        winManager.refreshOthers();
+                        let transferred = false;
+                        
+                        for (const other of winManager.others) {
+                            if (screenX >= other.shape.x && screenX <= other.shape.x + other.shape.w &&
+                                screenY >= other.shape.y && screenY <= other.shape.y + other.shape.h) {
+                                
+                                // TRANSFER OWNERSHIP!
+                                const targetLocalX = screenX - other.shape.x - 40;
+                                const targetLocalY = screenY - other.shape.y - 40;
+                                
+                                const transferPacket = {
+                                    id: Date.now(),
+                                    targetWinId: other.id,
+                                    x: targetLocalX,
+                                    y: targetLocalY,
+                                    vx: boxState.vx,
+                                    vy: boxState.vy
+                                };
+                                
+                                console.log("Transferred to override:", other.id);
+                                localStorage.setItem('prop_transfer', JSON.stringify(transferPacket));
+                                
+                                // Hide local
+                                box.style.display = 'none';
+                                transferred = true;
+                                break;
+                            }
+                        }
+                        
+                        // If no transfer target found, bounce off walls (old behavior) or return to bounds
+                        if(!transferred) {
+                            const floor = window.innerHeight - 82;
+                            if (boxState.y > floor) { boxState.y = floor; boxState.vy *= bounce; } 
+                            else if (boxState.y < 0) { boxState.y = 0; boxState.vy *= bounce; }
+                            
+                            if (boxState.x > window.innerWidth - 82) { boxState.x = window.innerWidth - 82; boxState.vx *= bounce; }
+                            else if (boxState.x < 0) { boxState.x = 0; boxState.vx *= bounce; }
+                        }
+
+                    } else {
+                        // Regular bounds check (floor only usually)
+                        const floor = window.innerHeight - 82;
+                        if (boxState.y > floor) { boxState.y = floor; boxState.vy *= bounce; }
+                    }
+                }
+                box.style.transform = `translate(${boxState.x}px, ${boxState.y}px)`;
+                requestAnimationFrame(updatePhysics);
+            }
+            updatePhysics();
+
+            // Listen for Prop Transfers
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'prop_transfer') {
+                    const packet = JSON.parse(e.newValue);
+                    if (packet && packet.targetWinId === winManager.id) {
+                        // ACCEPT TRANSFER
+                        // Wait a ms to ensure we don't double bounce?
+                        const now = Date.now();
+                        if (now - packet.id < 500) { // Fresh packet
+                            box.style.display = 'flex';
+                            boxState.x = packet.x;
+                            boxState.y = packet.y;
+                            boxState.vx = packet.vx;
+                            boxState.vy = packet.vy;
+                            boxState.isDragging = false;
+                        }
+                    }
+                }
+            });
+
+            function triggerWormhole(side) {
+                // Save state to LS
+                const transitData = {
+                    side: side,
+                    y: boxState.y,
+                    vx: boxState.vx, 
+                    vy: boxState.vy,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('wormhole_transit', JSON.stringify(transitData));
+                
+                // Trigger event for other tabs
+                localStorage.setItem('wormhole_event', Date.now());
+
+                // Hide local box
+                box.style.display = 'none';
+                
+                // Respawn safety: if no one catches it, bring it back after 3s? 
+                // For now, let's keep it simple. It's lost in the void if no other tab is open.
+            }
+
+            // Listen for Wormhole arrivals
+            window.addEventListener('storage', (e) => {
+               if (e.key === 'wormhole_event') {
+                   // Check if there is payload intended for us
+                   const payload = localStorage.getItem('wormhole_transit');
+                   if (payload) {
+                       const data = JSON.parse(payload);
+                       // We only catch if we are NOT the sender (basic check: we execute this too fast?)
+                       // Actually storage event doesn't fire on the tab that changed it, so we are safe.
+                       // We are the receiver.
+                       
+                       box.style.display = 'flex';
+                       // Invert X side
+                       boxState.x = (data.side === 'right') ? -70 : window.innerWidth; 
+                       boxState.y = data.y;
+                       boxState.vx = data.vx;
+                       boxState.vy = data.vy;
+                       updatePhysics(); // Restart loop if needed (it's always running though)
+                       
+                       // Consume payload so we don't have multiple clones if multiple tabs open?
+                       // Race condition possible but rare for 1 user.
+                       localStorage.removeItem('wormhole_transit');
+                   }
+               }
+            });
+
+            // C. INTER-WINDOW SYNC (GOD MODE)
+            // Listen for changes in other tabs
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'god_mode_sync') {
+                   if (e.newValue === 'true') {
+                       if (!document.body.classList.contains('god-mode')) activateGodMode(true);
+                   } else {
+                       if (document.body.classList.contains('god-mode')) activateGodMode(true);
+                   }
+                }
+            });
+
+            // Patch existing activateGodMode to broadcast
+            const originalActivate = activateGodMode;
+            activateGodMode = function(skipSync = false) { // Override function
+                 document.body.classList.toggle('god-mode');
+                const isGod = document.body.classList.contains('god-mode');
+                
+                if (!skipSync) {
+                    localStorage.setItem('god_mode_sync', isGod); // Broadcast
+                }
+
+                if (isGod) {
+                    console.log("GOD MODE ACTIVATED");
+                    gsap.to("body", { filter: "invert(1) hue-rotate(180deg)", duration: 0.5 });
+                    if(!skipSync) alert("⚠️ GOD MODE ACTIVATED ⚠️\nAdmin access granted.");
+                } else {
+                    gsap.to("body", { filter: "none", duration: 0.5 });
+                }
+            };
+
+            // --- 6. DIMENSIONAL RIFTS (THREE.JS + WINDOW MANAGER) ---
+            
+            // WindowManager Class
+            class WindowManager {
+                constructor() {
+                    this.id = Date.now();
+                    this.winData = { id: this.id, shape: { x: 0, y: 0, w: 0, h: 0 } };
+                    this.others = [];
+                    this.init();
+                }
+
+                init() {
+                    window.addEventListener('storage', (e) => {
+                        if (e.key === 'windows_update') {
+                            this.refreshOthers();
+                        }
+                    });
+                    
+                    window.addEventListener('beforeunload', () => {
+                        this.removeSelf();
+                    });
+
+                    setInterval(() => this.updateSelf(), 100);
+                }
+
+                updateSelf() {
+                    this.winData.shape = {
+                        x: window.screenX,
+                        y: window.screenY,
+                        w: window.innerWidth,
+                        h: window.innerHeight
+                    };
+                    
+                    const all = this.getAllWindows();
+                    all[this.id] = { ...this.winData, updated: Date.now() };
+                    
+                    // Cleanup stale
+                    const now = Date.now();
+                    for(const id in all) {
+                        if (now - all[id].updated > 1000) delete all[id];
+                    }
+
+                    localStorage.setItem('windows', JSON.stringify(all));
+                    localStorage.setItem('windows_update', now); // trigger listeners
+                }
+                
+                removeSelf() {
+                    const all = this.getAllWindows();
+                    delete all[this.id];
+                    localStorage.setItem('windows', JSON.stringify(all));
+                    localStorage.setItem('windows_update', Date.now());
+                }
+
+                getAllWindows() {
+                    try {
+                        return JSON.parse(localStorage.getItem('windows')) || {};
+                    } catch(e) { return {}; }
+                }
+                
+                refreshOthers() {
+                    const all = this.getAllWindows();
+                    this.others = Object.values(all).filter(w => w.id !== this.id);
+                }
+            }
+
+            const winManager = new WindowManager();
+
+            // Vortex visuals removed by user request
+
         });
     </script>
 </body>
