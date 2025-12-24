@@ -137,6 +137,23 @@ DFWSite/
 
 ---
 
+## 📱 Mobile Accessibility
+
+The site adapts for touch devices while preserving the full desktop experience:
+
+| Feature | Desktop | Mobile |
+|---------|---------|--------|
+| **Custom Cursor** | Dot + outline follows mouse | Hidden (native cursor) |
+| **CRT Scanlines** | 40% opacity | 15% opacity (performance) |
+| **CMY Title** | Mouse-driven color shift | Auto-animated pulse |
+| **Data Disk** | Mouse drag | Touch drag |
+| **God Mode** | Konami code (keyboard) | **Long-press logo (3s)** |
+
+### Mobile Easter Egg
+📱 **Long-press the "DualsFWShield" logo for 3 seconds** to activate God Mode on mobile!
+
+---
+
 ## 🚀 Quick Start
 
 1. Clone or download the repository

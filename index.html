@@ -151,6 +151,27 @@
         .cmy-layer.yellow { color: #FFFF00; transform: translate(calc(var(--rx, 0) * 1.5px), calc(var(--ry, 0) * -1.5px)); }
         .cmy-base { color: transparent; position: relative; z-index: 10; } /* Invisible text for accessibility/layout */
         
+        /* MOBILE ADAPTATIONS */
+        @media (pointer: coarse), (hover: none) {
+            /* Hide custom cursor on touch devices */
+            .cursor-dot, .cursor-outline { display: none !important; }
+            body { cursor: auto !important; }
+            
+            /* Reduce CRT effect for performance */
+            .crt-scanlines { opacity: 0.15; }
+            
+            /* CMY title: auto-animate instead of mouse-driven */
+            .cmy-wrapper {
+                animation: cmy-pulse 4s ease-in-out infinite;
+            }
+            @keyframes cmy-pulse {
+                0%, 100% { --rx: -5; --ry: 0; }
+                25% { --rx: 5; --ry: 3; }
+                50% { --rx: 0; --ry: -5; }
+                75% { --rx: -3; --ry: 5; }
+            }
+        }
+        
     </style>
 </head>
 <body class="font-mono antialiased overflow-hidden">
@@ -203,7 +224,7 @@
 
     <!-- NAV -->
     <nav class="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-50 mix-blend-difference text-white pointer-events-none">
-        <a href="#" class="text-2xl font-display pointer-events-auto hover-trigger">DualsFWShield</a>
+        <a href="#" id="nav-logo" class="text-2xl font-display pointer-events-auto hover-trigger">DualsFWShield</a>
         <div class="hidden md:flex gap-6 text-sm md:text-base pointer-events-auto font-bold">
             <a href="#projects" class="hover:text-acid-yellow hover-trigger">[DEV]</a>
             <a href="#videos" class="hover:text-acid-yellow hover-trigger">[MOTION]</a>
@@ -876,6 +897,30 @@
                 }
             }
 
+            // MOBILE: Long-press on logo (3s) to activate God Mode
+            const navLogo = document.getElementById('nav-logo');
+            let longPressTimer = null;
+            
+            if (navLogo) {
+                navLogo.addEventListener('touchstart', (e) => {
+                    longPressTimer = setTimeout(() => {
+                        activateGodMode();
+                        // Vibrate if supported
+                        if (navigator.vibrate) navigator.vibrate(200);
+                    }, 3000); // 3 second hold
+                }, { passive: true });
+                
+                navLogo.addEventListener('touchend', () => {
+                    if (longPressTimer) clearTimeout(longPressTimer);
+                });
+                navLogo.addEventListener('touchcancel', () => {
+                    if (longPressTimer) clearTimeout(longPressTimer);
+                });
+                navLogo.addEventListener('touchmove', () => {
+                    if (longPressTimer) clearTimeout(longPressTimer);
+                });
+            }
+
             // B. INTERACTIVE TERMINAL
             const termInput = document.getElementById('terminal-input');
             const termTable = document.querySelector('tbody');
@@ -993,6 +1038,27 @@
                     boxState.y = e.clientY - 40;
                 }
             });
+
+            // MOBILE: Touch Events for Data Disk
+            box.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                boxState.isDragging = true;
+                boxState.vx = 0;
+                boxState.vy = 0;
+            }, { passive: false });
+            
+            window.addEventListener('touchend', () => { boxState.isDragging = false; });
+            window.addEventListener('touchcancel', () => { boxState.isDragging = false; });
+            
+            window.addEventListener('touchmove', (e) => {
+                if (boxState.isDragging && e.touches.length > 0) {
+                    const touch = e.touches[0];
+                    boxState.vx = (touch.clientX - boxState.x) * 0.4;
+                    boxState.vy = (touch.clientY - boxState.y) * 0.4;
+                    boxState.x = touch.clientX - 40;
+                    boxState.y = touch.clientY - 40;
+                }
+            }, { passive: true });
 
             function updatePhysics() {
                 if (!boxState.isDragging && box.style.display !== 'none') {
