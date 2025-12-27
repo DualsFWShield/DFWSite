@@ -42,6 +42,7 @@
             }
         }
     </script>
+    
 
     <style>
         body {
@@ -49,6 +50,12 @@
             color: #050505;
             cursor: none;
             overflow-x: hidden;
+        }
+
+        /* Devicon Outlined Style */
+        .devicon-outlined {
+            color: transparent;
+            -webkit-text-stroke: 2px black;
         }
 
         ::selection {
@@ -294,14 +301,14 @@
         <!-- TECH STACK MARQUEE -->
         <div class="w-full py-6 bg-acid-yellow border-b-4 border-black overflow-hidden flex whitespace-nowrap rotate-1">
             <div class="marquee-content flex gap-12 font-display text-5xl md:text-7xl text-black items-center">
-                <span>PYTHON</span> <span>//</span>
-                <span class="text-stroke">JAVASCRIPT</span> <span>//</span>
-                <span>TENSORFLOW</span> <span>//</span>
-                <span class="text-stroke">VUE.JS</span> <span>//</span>
-                <span>ETHICAL HACKING</span> <span>//</span>
-                <span class="text-stroke">BASH</span> <span>//</span>
-                <span>PHP</span> <span>//</span>
-                <span class="text-stroke">PYTORCH</span> <span>//</span>
+                <div class="flex items-center gap-4"> <span>PYTHON</span></div> <span>//</span>
+                <div class="flex items-center gap-4"> <span class="text-stroke">JAVASCRIPT</span></div> <span>//</span>
+                <div class="flex items-center gap-4"> <span>TENSORFLOW</span></div> <span>//</span>
+                <div class="flex items-center gap-4"><span class="text-stroke">VUE.JS</span></div> <span>//</span>
+                <div class="flex items-center gap-4"><span>ETHICAL HACKING</span></div> <span>//</span>
+                <div class="flex items-center gap-4"><span class="text-stroke">BASH</span></div> <span>//</span>
+                <div class="flex items-center gap-4"><span>PHP</span></div> <span>//</span>
+                <div class="flex items-center gap-4"><span class="text-stroke">PYTORCH</span></div> <span>//</span>
             </div>
         </div>
 
@@ -660,7 +667,7 @@
                         </a>
                         <!-- X (TWITTER) -->
                         <a href="https://x.com/Rapt_re" target="_blank" class="bg-black text-white px-3 py-2 font-bold hover:bg-white hover:text-black border-2 border-black transition-colors flex items-center gap-2 text-sm justify-center">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11.733 16h4.267l-11.733 -16z"/><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"/></svg> X / TWITTER
+                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11.733 16h4.267l-11.733 -16z"/><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"/></svg> / TWITTER
                         </a>
                         <!-- YOUTUBE (MAIN) -->
                         <a href="https://www.youtube.com/@NoahBruijninckx" target="_blank" class="bg-black text-white px-3 py-2 font-bold hover:bg-white hover:text-black border-2 border-black transition-colors flex items-center gap-2 text-sm justify-center md:col-span-1">
@@ -1139,17 +1146,17 @@
                         // If no transfer target found, bounce off walls (old behavior) or return to bounds
                         if(!transferred) {
                             const floor = window.innerHeight - 82;
-                            if (boxState.y > floor) { boxState.y = floor; boxState.vy *= bounce; } 
-                            else if (boxState.y < 0) { boxState.y = 0; boxState.vy *= bounce; }
+                            if (boxState.y > floor) { boxState.y = floor; boxState.vy *= bounce; triggerHaptic(); } 
+                            else if (boxState.y < 0) { boxState.y = 0; boxState.vy *= bounce; triggerHaptic(); }
                             
-                            if (boxState.x > window.innerWidth - 82) { boxState.x = window.innerWidth - 82; boxState.vx *= bounce; }
-                            else if (boxState.x < 0) { boxState.x = 0; boxState.vx *= bounce; }
+                            if (boxState.x > window.innerWidth - 82) { boxState.x = window.innerWidth - 82; boxState.vx *= bounce; triggerHaptic(); }
+                            else if (boxState.x < 0) { boxState.x = 0; boxState.vx *= bounce; triggerHaptic(); }
                         }
 
                     } else {
                         // Regular bounds check (floor only usually)
                         const floor = window.innerHeight - 82;
-                        if (boxState.y > floor) { boxState.y = floor; boxState.vy *= bounce; }
+                        if (boxState.y > floor) { boxState.y = floor; boxState.vy *= bounce; triggerHaptic(); }
                     }
                 }
                 box.style.transform = `translate(${boxState.x}px, ${boxState.y}px)`;
@@ -1323,6 +1330,70 @@
             const winManager = new WindowManager();
 
             // Vortex visuals removed by user request
+
+            // --- 7. MOBILE SENSORS (GYRO + HAPTICS) ---
+            function initMobileSensors() {
+                // Check for sensor support
+                if (window.DeviceOrientationEvent && 'ontouchstart' in window) {
+                    
+                    window.addEventListener('deviceorientation', (e) => {
+                        // Null check for desktop dev tools or non-gyro devices
+                        if (e.beta === null || e.gamma === null) return;
+
+                        const beta = e.beta;   // -180 to 180 (front/back tilt)
+                        const gamma = e.gamma; // -90 to 90 (left/right tilt)
+                        
+                        // A. DATA DISK GRAVITY (Override/Add to physics)
+                        // Only apply if not dragging and box is visible
+                        if (typeof boxState !== 'undefined' && !boxState.isDragging && document.getElementById('gravity-box').style.display !== 'none') {
+                             // Beta: standard holding position is ~45deg. 
+                             // We want 0 force at 45deg. Tipping forward (<45) = negative Y force (up). Tipping back (>45) = positive Y force (down).
+                             const yForce = (beta - 45) * 0.05; 
+                             const xForce = gamma * 0.05;
+                             
+                             boxState.vx += xForce;
+                             boxState.vy += yForce;
+                        }
+
+                        // B. HERO TITLE PARALLAX (CMY)
+                        const titleContainer = document.getElementById('hero-title-container');
+                        if (titleContainer) {
+                            // Map tilt to similar range as mouse (-15 to 15)
+                            // Gamma (Left/Right) -> X axis
+                            // Beta (Up/Down) -> Y axis
+                            const rY = Math.max(-15, Math.min(15, gamma / 2));
+                            const rX = Math.max(-15, Math.min(15, (beta - 45) / 2));
+                            
+                            titleContainer.style.setProperty('--rx', rX);
+                            titleContainer.style.setProperty('--ry', rY);
+                        }
+
+                        // C. TERMINAL ARCHIVE LIST (Row Parallax/Depth)
+                        // We want the rows to slide slightly based on X tilt (gamma)
+                        const terminalRows = document.querySelectorAll('#terminal tbody tr');
+                        if (terminalRows.length > 0) {
+                            // Throttle GSAP updates slightly or just set directly for performance? 
+                            // Direct transform is faster than creating GSAP tweens every frame.
+                            const xTilt = Math.max(-30, Math.min(30, gamma)); // Clamp
+                            
+                            terminalRows.forEach((row, index) => {
+                                // Stagger factor: deeper items move more or less? 
+                                // Let's make top items move less, bottom items move more => depth.
+                                const depth = 1 + (index * 0.2); 
+                                const xPos = xTilt * depth * 0.5;
+                                row.style.transform = `translateX(${xPos}px)`;
+                            });
+                        }
+                    });
+                }
+            }
+            // Start sensors
+            initMobileSensors();
+
+            // Utilities
+            function triggerHaptic() {
+                 if (navigator.vibrate) navigator.vibrate(15);
+            }
 
         });
     </script>
