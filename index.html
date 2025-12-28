@@ -212,6 +212,24 @@
             border-style: solid;
             border-color: #fff transparent transparent transparent;
         }
+
+        /* SYSTEM HINTS */
+        .system-hint-msg {
+            background: rgba(0,0,0,0.9);
+            color: #20C20E;
+            border-left: 4px solid #ccff00;
+            padding: 8px;
+            transform: translateX(-120%);
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.5);
+        }
+        .system-hint-msg.sarcastic {
+            color: #ff0099;
+            border-color: #ff0099;
+        }
+        .system-hint-msg.visible {
+            transform: translateX(0);
+        }
         
     </style>
 </head>
@@ -227,6 +245,9 @@
         <!-- Hint attached to box -->
         <div id="disk-hint">OPEN THE WEBSITE IN A SECOND WINDOW AND THROW ME IN IT</div>
     </div>
+
+    <!-- SYSTEM HINTS CONTAINER -->
+    <div id="system-hints" class="fixed bottom-4 left-4 flex flex-col gap-2 z-50 pointer-events-none font-mono text-xs max-w-[300px]"></div>
 
     <!-- 
     
@@ -975,6 +996,7 @@
             if (navLogo) {
                 navLogo.addEventListener('touchstart', (e) => {
                     longPressTimer = setTimeout(() => {
+                        window.hintMgr?.markUsed('god_mode_mobile'); // Mark hint used
                         activateGodMode();
                         // Vibrate if supported
                         if (navigator.vibrate) navigator.vibrate(200);
@@ -1513,6 +1535,134 @@
             function triggerHaptic() {
                  if (boxState.sensorsEnabled && navigator.vibrate) navigator.vibrate(15);
             }
+
+            // --- 8. SYSTEM HINTS MANAGER (EASTER EGGS) ---
+            class HintManager {
+                constructor() {
+                    this.container = document.getElementById('system-hints');
+                    this.hints = [];
+                    this.startTime = Date.now();
+                    this.usedFeatures = new Set();
+                    
+                    // Start loop
+                    setInterval(() => this.check(), 1000);
+                }
+
+                register(id, delay, msg, sarcasticMsg, delaySarcasm = 120) {
+                    this.hints.push({
+                        id,
+                        delay,
+                        msg,
+                        sarcasticMsg,
+                        delaySarcasm: delay + delaySarcasm, // Sarcasm comes 2 mins AFTER hint
+                        shownStandard: false,
+                        shownSarcastic: false
+                    });
+                }
+
+                markUsed(id) {
+                    if(!this.usedFeatures.has(id)){
+                        this.usedFeatures.add(id);
+                        // Optional: Show success/congrats log?
+                    }
+                }
+
+                check() {
+                    const elapsed = (Date.now() - this.startTime) / 1000;
+                    
+                    this.hints.forEach(hint => {
+                        if (this.usedFeatures.has(hint.id)) return; // Already found
+
+                        // Standard Hint
+                        if (elapsed >= hint.delay && !hint.shownStandard) {
+                            this.show(hint.msg);
+                            hint.shownStandard = true;
+                        }
+
+                        // Sarcastic Hint
+                        if (elapsed >= hint.delaySarcasm && !hint.shownSarcastic) {
+                            this.show(hint.sarcasticMsg, true);
+                            hint.shownSarcastic = true;
+                        }
+                    });
+                }
+
+                show(text, isSarcastic = false) {
+                    if (!this.container) return;
+
+                    const el = document.createElement('div');
+                    el.className = `system-hint-msg ${isSarcastic ? 'sarcastic' : ''}`;
+                    el.innerText = `> ${text}`;
+                    
+                    this.container.appendChild(el);
+                    
+                    // Animate In
+                    requestAnimationFrame(() => el.classList.add('visible'));
+
+                    // Remove after 8 seconds
+                    setTimeout(() => {
+                        el.classList.remove('visible');
+                        setTimeout(() => el.remove(), 500); // Wait for transition
+                    }, 8000);
+                }
+            }
+
+            // Init & Register Hints
+            const hints = new HintManager();
+            const isMobile = ('ontouchstart' in window);
+
+            // 1. Hacker Text (45s)
+            hints.register('hacker_text', 45, 
+                "INFO: Encrypted signatures detected. Cursor interaction required.",
+                "WARNING: Curiosity levels critical. Hover over the glitchy text."
+            );
+            // Hook into hacker text to mark used
+            document.querySelectorAll('.font-display, .hover-trigger').forEach(el => {
+                el.addEventListener('mouseenter', () => hints.markUsed('hacker_text'), {once:true});
+            });
+
+            // 2. Terminal (60s)
+            hints.register('terminal', 60, 
+                "INFO: Terminal uplink active. 'help' command available.",
+                "ERROR: Keyboard missing? Type 'help' in the terminal."
+            );
+            // Hook into terminal input
+            const tIn = document.getElementById('terminal-input');
+            if(tIn) tIn.addEventListener('keydown', () => hints.markUsed('terminal'), {once:true});
+
+            // 3. Konami (Desktop) / God Mode (Mobile) (90s)
+            if (!isMobile) {
+                hints.register('konami', 90, 
+                    "TIP: Vintage cheat codes supported. Up, Up, Down, Down...",
+                    "STATUS: Disappointed. ↑↑↓↓←→←→BA. Do it."
+                );
+                // Hook into activateGodMode
+                const _oldGod = activateGodMode;
+                activateGodMode = function(skip) {
+                    hints.markUsed('konami');
+                    _oldGod(skip);
+                };
+            } else {
+                 hints.register('god_mode_mobile', 90, 
+                    "TIP: The Identity Grid logo holds root access.",
+                    "STATUS: Patience is a virtue. Hold the top-left logo for 3s."
+                );
+                 // Attached to logo touch event logic below
+            }
+
+            // 4. ASCII Art (120s)
+            hints.register('ascii', 120, 
+                "INFO: The source code contains hidden art.",
+                "STATUS: Right-click -> View Source. It's not rocket science."
+            );
+            // Validation: Detect contextmenu or F12
+            window.addEventListener('contextmenu', () => hints.markUsed('ascii'));
+            window.addEventListener('keydown', (e) => {
+                if(e.key === 'F12' || (e.ctrlKey && e.key === 'u')) hints.markUsed('ascii');
+            });
+
+            // Expose for mobile logo hook
+            window.hintMgr = hints;
 
         });
     </script>
