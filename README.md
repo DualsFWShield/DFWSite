@@ -3,182 +3,106 @@
 > A neo-brutalist, cyberpunk-inspired portfolio website with advanced animations, hidden Easter eggs, and experimental multi-window physics.
 
 ![Status](https://img.shields.io/badge/status-active-00ff00)
-![Version](https://img.shields.io/badge/version-2.5.0--RC1-cyan)
+![Version](https://img.shields.io/badge/version-2.6.0-neon-pink)
 
 ---
 
 ## 🎨 Design Philosophy
 
 **Neo-Brutalist Cyberpunk**: Raw, bold typography meets hacker aesthetics. The design emphasizes:
-- High contrast black/white with accent colors (Acid Yellow, Terminal Green)
-- Monospace fonts and system-inspired UI
-- Glitch effects and CRT-style overlays
-- CMY color splitting for a chromatic aberration effect
+-   **High Contrast**: Black/White base with Acid Yellow (#CCFF00), Terminal Green (#20C20E), and Neon Pink (#FF0099) accents.
+-   **Typography**: *Archivo Black* for display headers, *Space Mono* for data/terminal text.
+-   **Visual FX**:
+    -   **CRT Scanlines**: Overlay for a retro-monitor aesthetic.
+    -   **Chromatic Aberration (CMY)**: Main title splits into Cyan/Magenta/Yellow layers based on mouse movement (Desktop) or Gyroscope tilt (Mobile).
+    -   **Glitch & Reveal**: Text decodes from random characters on hover.
 
 ---
 
 ## ✨ Core Features
 
-### 1. Boot Sequence Animation
-On page load, a simulated system boot sequence plays:
-- Scrolling log messages (`BIOS_INIT`, `MEMORY_CHECK`, etc.)
-- Progress bar animation
-- Dramatic reveal transition
+### 1. Boot Sequence
+Simulated system initialization with scrolling logs, integrity checks, and a dramatic "SYSTEM ROOT" reveal.
 
-### 2. CMY Title Split
-The hero title "DUALSFW SHIELD" uses `mix-blend-mode: multiply` with Cyan, Magenta, and Yellow layers that shift based on mouse position, creating a living chromatic aberration effect.
+### 2. Physics-Based Data Disk (Gravity Box)
+A draggable, physics-enabled element that serves as a playground.
+-   **Desktop**: Drag and throw with momentum, gravity, and bounce.
+-   **Mobile Integration**:
+    -   **Gyroscope Control**: Tilt phone to slide the box (User must toggle **ON** via the small button in the box).
+    -   **Haptic Feedback**: Vibrates on wall collisions.
+    -   **Inactivity Hint**: If untouched, a hint "TAP TO ACTIVATE SENSORS" appears pointing to the toggle.
+-   **Bending Reality (Multi-Window)**: Throw the disk off-screen, and it can land in another open window of the site!
 
-### 3. Smooth Scrolling
-Powered by [Lenis](https://github.com/studio-freight/lenis) for buttery-smooth momentum scrolling.
+### 3. Interactive Terminal
+A fully functional command line interface.
+-   **Scroll Trigger**: Rows animate in as you scroll down.
+-   **Mobile Motion**: Rows slide horizontally based on device tilt (Gyro Parallax).
+-   **Commands**:
+    -   `help`: detailed command list.
+    -   `ls`: list project directories.
+    -   `whoami`: user identification.
+    -   `matrix`: trigger the digital rain.
+    -   `konami`: secret hint.
 
-### 4. Text Reveal Animations
-Elements with `.reveal-text` class animate in with GSAP ScrollTrigger as you scroll.
+### 4. Tech Stack Marquee
+An infinite scrolling ticker featuring development skills with **Devicon** integration.
 
-### 5. Velocity Skew
-Sections skew slightly based on scroll velocity for a dynamic, responsive feel.
-
-### 6. CRT Scanlines
-A subtle animated scanline overlay gives everything a retro-monitor aesthetic.
-
-### 7. Custom Cursor
-A dual-element cursor (dot + outline ring) that:
-- Follows mouse movement with easing
-- Scales up on hoverable elements (`.hover-trigger`)
-- Blends with the page content
-
-### 8. Global Grid Overlay
-A fixed 40px grid pattern covers the entire viewport, extending behind the navigation.
-
----
-
-## 🕹️ Interactive Elements
-
-### Data Disk (Gravity Box)
-A draggable physics element in the hero section.
-
-| Feature | Description |
-|---------|-------------|
-| **Drag & Throw** | Click and drag to move, release to throw with momentum |
-| **Physics** | Simulated gravity, friction, and bounce |
-| **Multi-Window Transfer** | Throw the disk into another browser window and it transfers there! |
-
-### Interactive Terminal
-Navigate to `[TERM]` section or press commands:
-
-| Command | Action |
-|---------|--------|
-| `help` | List available commands |
-| `about` | Display bio information |
-| `skills` | List technical skills |
-| `projects` | Show project cards |
-| `contact` | Display contact info |
-| `clear` | Clear terminal output |
-| `matrix` | Matrix rain effect |
+### 5. Advanced Parallax (Mobile)
+On mobile devices, the Gyroscope breathes life into the static page:
+-   **Hero Title**: CMY layers split based on device orientation.
+-   **Depths**: Project Cards, Videos, Logo Grid, and Footer Title all have varying depth (parallax) layers responsive to tilt.
 
 ---
 
-## 🥚 Easter Eggs & Secrets
+## 🥚 Easter Eggs & Secrets (System Hints)
 
-### 1. Konami Code
-**Sequence**: `↑ ↑ ↓ ↓ ← → ← → B A`
+The site features a **Smart Hint Manager** that guides you if you miss secrets. Hints appear at the bottom-left as system logs. If ignored for 120s, the system gets sarcastic.
 
-**Effect**: Triggers "GOD MODE" - the page inverts colors, glitches, and broadcasts the activation to all open windows.
+| Secret | How to Trigger | Standard Hint (Time) | Sarcastic Follow-up (+2m) |
+| :--- | :--- | :--- | :--- |
+| **Hacker Text** | Hover over glitchy text to decrypt | "Encrypted signatures detected..." (45s) | "Curiosity levels critical. Hover..." |
+| **Terminal** | Type `help` in the terminal | "Terminal uplink active..." (60s) | "Keyboard missing? Type 'help'..." |
+| **Konami Code** | `↑↑↓↓←→←→BA` (Desktop) | "Vintage cheat codes supported..." (90s) | "Disappointed. ↑↑↓↓←→←→BA. Do it." |
+| **God Mode** | Long-press top-left Logo (3s) (Mobile) | "The Identity Grid logo holds root..." (90s) | "Patience is a virtue. Hold logo 3s." |
+| **ASCII Art** | Right-Click -> View Source | "Source code contains hidden art." (120s) | "Right-click -> View Source. Not rocket science." |
 
-### 2. Hidden ASCII Logo
-Right-click → "View Page Source" → Find the ASCII art logo hidden in HTML comments:
-```
-    ██████╗ ██╗   ██╗ █████╗ ██╗     ███████╗    ███████╗██╗    ██╗    ███████╗██╗  ██╗██╗███████╗██╗     ██████╗ 
-    ██╔══██╗██║   ██║██╔══██╗██║     ██╔════╝    ██╔════╝██║    ██║    ██╔════╝██║  ██║██║██╔════╝██║     ██╔══██╗
-    ██║  ██║██║   ██║███████║██║     ███████╗    █████╗  ██║ █╗ ██║    ███████╗███████║██║█████╗  ██║     ██║  ██║
-    ██║  ██║██║   ██║██╔══██║██║     ╚════██║    ██╔══╝  ██║███╗██║    ╚════██║██╔══██║██║██╔══╝  ██║     ██║  ██║
-    ██████╔╝╚██████╔╝██║  ██║███████╗███████║    ██║     ╚███╔███╔╝    ███████║██║  ██║██║███████╗███████╗██████╔╝
-    ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝    ╚═╝      ╚══╝╚══╝     ╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝╚═════╝ 
-```
+**System Reward**: Using a feature marks it as "Found" and cancels future hints.
 
-### 3. Terminal Secrets
-- Type `matrix` for a Matrix-style code rain
+---
 
-### 4. Multi-Window Sync
-Open the site in multiple browser windows:
-- **God Mode** syncs across all windows via `localStorage`
-- **Data Disk** can be thrown between windows - it actually transfers!
+## 📱 Mobile Adaptations
+
+The experience is fully responsive while maintaining the "Raw" aesthetic.
+
+| Feature | Desktop Behavior | Mobile Behavior |
+| :--- | :--- | :--- |
+| **Inputs** | Mouse / Kidney-Board | Touch / Gyroscope |
+| **Cursor** | Custom Ring + Dot | Native (Hidden) |
+| **Parallax** | Mouse Position | Device Tilt (Gamma/Beta) |
+| **Sensors** | N/A | Tilt for Gravity & Parallax |
+| **God Mode** | Konami Code | Logo Long-Press (3s) |
+| **CRT Effect** | 40% Opacity | 15% Opacity (Performance) |
 
 ---
 
 ## 🛠️ Technical Stack
 
-| Technology | Purpose |
-|------------|---------|
-| **HTML5/CSS3** | Structure & Styling |
-| **Tailwind CSS** | Utility-first styling |
-| **GSAP** | Animations & ScrollTrigger |
-| **Lenis** | Smooth scrolling |
-| **Vanilla JavaScript** | Interactivity & Physics |
-
----
-
-## 📁 Project Structure
-
-```
-DFWSite/
-├── index.html          # Main (and only) file - everything is self-contained
-├── README.md           # This file
-└── assets/             # (Optional) Images/videos if any
-```
-
----
-
-## ⚡ Performance Notes
-
-- **No build step required** - Pure HTML/CSS/JS
-- **CDN dependencies** - Tailwind, GSAP, Lenis loaded via CDN
-- **Lightweight** - No heavy frameworks
-- **Hardware accelerated** - CSS transforms for animations
-
----
-
-## 📱 Mobile Accessibility
-
-The site adapts for touch devices while preserving the full desktop experience:
-
-| Feature | Desktop | Mobile |
-|---------|---------|--------|
-| **Custom Cursor** | Dot + outline follows mouse | Hidden (native cursor) |
-| **CRT Scanlines** | 40% opacity | 15% opacity (performance) |
-| **CMY Title** | Mouse-driven color shift | Auto-animated pulse |
-| **Data Disk** | Mouse drag | Touch drag |
-| **God Mode** | Konami code (keyboard) | **Long-press logo (3s)** |
-
-### Mobile Easter Egg
-📱 **Long-press the "DualsFWShield" logo for 3 seconds** to activate God Mode on mobile!
+-   **HTML5 / CSS3 / Vanilla JS**: No framework bloat. Pure performance.
+-   **Tailwind CSS**: Utility-first styling with custom config for Neo-Brutalist colors.
+-   **GSAP (GreenSock)**: Complex timelines, ScrollTrigger, and tweening.
+-   **Lenis**: Smooth, inertial scrolling.
+-   **Canvas / Three.js**: Specific visual effects.
 
 ---
 
 ## 🚀 Quick Start
 
-1. Clone or download the repository
-2. Open `index.html` in a modern browser
-3. Enjoy the boot sequence!
+1.  **Clone**: `git clone ...`
+2.  **Run**: Open `index.html` via Live Server or standard browser.
+3.  **Deploy**: Static hosting (Vercel/Netlify/GitHub Pages).
 
-For the full multi-window experience:
-1. Open `index.html`
-2. Duplicate the tab (Ctrl+Shift+D or Cmd+Shift+D)
-3. Arrange windows side-by-side
-4. Try throwing the Data Disk between them!
+**Pro Tip**: Open two windows side-by-side on a desktop to test the **Wormhole** physics transfer!
 
 ---
 
-## 📜 License
-
-© 2025 DualsFWShield. All rights reserved.
-
----
-
-## 🔗 Links
-
-- **GitHub**: [github.com/DualsFWShield](https://github.com/DualsFWShield)
-- **Live Site**: *Deploy to see in action*
-
----
-
-> *"SECURE CONNECTION ESTABLISHED."*
+> *"SYSTEM INTEGRITY: 100%. WELCOME TO THE GRID."*
