@@ -236,6 +236,9 @@
 <body class="font-mono antialiased overflow-hidden">
     <!-- 3D WORLD -->
     <canvas id="world-canvas"></canvas>
+    
+    <!-- MATRIX RAIN CANVAS (Hidden by default) -->
+    <canvas id="matrix-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-[9900] opacity-0 transition-opacity duration-1000"></canvas>
 
     <!-- GRAVITY BOX -->
     <div id="gravity-box">
@@ -1050,7 +1053,8 @@
                         alert("ACCESS DENIED: You didn't say the magic word.");
                         break;
                     case 'matrix':
-                        window.open('https://dualsfwshield.github.io/Bot-Arena/'); // Redirect to a "matrix" like project or just toggle god mode
+                        // window.open('https://dualsfwshield.github.io/Bot-Arena/'); 
+                        if(window.startMatrixRain) window.startMatrixRain();
                         break;
                     case 'konami':
                          alert("Don't type it, DO it.");
@@ -1557,13 +1561,21 @@
             const isMobile = ('ontouchstart' in window);
 
             // 1. Hacker Text (45s)
-            hints.register('hacker_text', 45, 
-                "INFO: Encrypted signatures detected. Cursor interaction required.",
-                "WARNING: Curiosity levels critical. Hover over the glitchy text."
-            );
-            // Hook into hacker text to mark used
+            // Mobile Adjustment: Click instead of Hover
+            const msgHacker = isMobile 
+                ? "INFO: Encrypted signatures detected. Tap to decrypt."
+                : "INFO: Encrypted signatures detected. Cursor interaction required.";
+            const msgHackerSarcastic = isMobile
+                ? "WARNING: Curiosity levels critical. Tap the glitchy text."
+                : "WARNING: Curiosity levels critical. Hover over the glitchy text.";
+
+            hints.register('hacker_text', 45, msgHacker, msgHackerSarcastic);
+            
+            // Hook into hacker text to mark used (Hover or Click)
             document.querySelectorAll('.font-display, .hover-trigger').forEach(el => {
                 el.addEventListener('mouseenter', () => hints.markUsed('hacker_text'), {once:true});
+                // Also mobile tap
+                el.addEventListener('click', () => hints.markUsed('hacker_text'), {once:true});
             });
 
             // 2. Terminal (60s)
@@ -1595,12 +1607,14 @@
                  // Attached to logo touch event logic below
             }
 
-            // 4. ASCII Art (120s)
-            hints.register('ascii', 120, 
-                "INFO: The source code contains hidden art.",
-                "STATUS: Right-click -> View Source. It's not rocket science."
-            );
-            // Validation: Detect contextmenu or F12
+            // 4. ASCII Art (120s) - DESKTOP ONLY
+            if(!isMobile) {
+                hints.register('ascii', 120, 
+                    "INFO: The source code contains hidden art.",
+                    "STATUS: Right-click -> View Source. It's not rocket science."
+                );
+            }
+            // Validation: Detect contextmenu or F12 (Always listen just in case)
             window.addEventListener('contextmenu', () => hints.markUsed('ascii'));
             window.addEventListener('keydown', (e) => {
                 if(e.key === 'F12' || (e.ctrlKey && e.key === 'u')) hints.markUsed('ascii');
@@ -1608,6 +1622,69 @@
 
             // Expose for mobile logo hook
             window.hintMgr = hints;
+
+
+            // --- 9. MATRIX RAIN EFFECT ---
+            let matrixInterval = null;
+            
+            function startMatrixRain() {
+                const cvs = document.getElementById('matrix-canvas');
+                if(!cvs) return;
+                
+                const ctx = cvs.getContext('2d');
+                cvs.width = window.innerWidth;
+                cvs.height = window.innerHeight;
+                
+                cvs.style.opacity = '1';
+                
+                // Characters - Katakana + Latin
+                const chars = "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                const charArray = chars.split('');
+                
+                const fontSize = 16;
+                const columns = cvs.width / fontSize;
+                
+                const drops = [];
+                for(let x = 0; x < columns; x++) drops[x] = 1;
+                
+                if(matrixInterval) clearInterval(matrixInterval);
+                
+                const draw = () => {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                    ctx.fillRect(0, 0, cvs.width, cvs.height);
+                    
+                    ctx.fillStyle = '#20C20E'; // Terminal Green
+                    ctx.font = fontSize + 'px monospace';
+                    
+                    for(let i = 0; i < drops.length; i++) {
+                        const text = charArray[Math.floor(Math.random() * charArray.length)];
+                        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+                        
+                        if(drops[i]*fontSize > cvs.height && Math.random() > 0.975) {
+                            drops[i] = 0;
+                        }
+                        drops[i]++;
+                    }
+                };
+                
+                matrixInterval = setInterval(draw, 33);
+                
+                // Play sound if possible?
+                // Add click listener to stop it?
+                cvs.style.pointerEvents = 'auto'; // allow clicking to stop
+                const stopRain = () => {
+                    cvs.style.opacity = '0';
+                    cvs.style.pointerEvents = 'none';
+                    setTimeout(() => clearInterval(matrixInterval), 1000);
+                    cvs.removeEventListener('click', stopRain);
+                };
+                cvs.addEventListener('click', stopRain);
+                
+                alert("MATRIX UPLINK ESTABLISHED.\nClick anywhere to disconnect.");
+            }
+            
+            // Expose for command
+            window.startMatrixRain = startMatrixRain;
 
         });
     </script>

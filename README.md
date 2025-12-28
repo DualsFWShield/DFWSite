@@ -45,7 +45,7 @@ A fully functional command line interface.
     -   `konami`: secret hint.
 
 ### 4. Tech Stack Marquee
-An infinite scrolling ticker featuring development skills with **Devicon** integration.
+An infinite scrolling ticker featuring development skills.
 
 ### 5. Advanced Parallax (Mobile)
 On mobile devices, the Gyroscope breathes life into the static page:
@@ -64,7 +64,7 @@ The site features a **Smart Hint Manager** that guides you if you miss secrets. 
 | **Terminal** | Type `help` in the terminal | "Terminal uplink active..." (60s) | "Keyboard missing? Type 'help'..." |
 | **Konami Code** | `↑↑↓↓←→←→BA` (Desktop) | "Vintage cheat codes supported..." (90s) | "Disappointed. ↑↑↓↓←→←→BA. Do it." |
 | **God Mode** | Long-press top-left Logo (3s) (Mobile) | "The Identity Grid logo holds root..." (90s) | "Patience is a virtue. Hold logo 3s." |
-| **ASCII Art** | Right-Click -> View Source | "Source code contains hidden art." (120s) | "Right-click -> View Source. Not rocket science." |
+| **ASCII Art** | Right-Click -> View Source (Desktop) | "Source code contains hidden art." (120s) | "Right-click -> View Source. Not rocket science." |
 
 **System Reward**: Using a feature marks it as "Found" and cancels future hints.
 
