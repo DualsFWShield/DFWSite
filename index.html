@@ -1098,22 +1098,7 @@
             const bounce = -0.95;  // Super bouncy
 
 
-            // Wormhole Sync: Check if we are receiving an object
-            const pendingWormhole = localStorage.getItem('wormhole_transit');
-            if (pendingWormhole) {
-                const data = JSON.parse(pendingWormhole);
-                const now = Date.now();
-                // Expire after 2 seconds to prevent old ghosts
-                if (now - data.timestamp < 2000) {
-                    // Spawn from opposite side
-                    boxState.y = data.y;
-                    boxState.x = (data.side === 'right') ? -70 : window.innerWidth - 10;
-                    boxState.vx = data.vx;
-                    boxState.vy = data.vy;
-                    // Clear it
-                    localStorage.removeItem('wormhole_transit');
-                }
-            }
+
 
             // Mouse Events
             box.addEventListener('mousedown', (e) => {
@@ -1243,52 +1228,7 @@
                 }
             });
 
-            function triggerWormhole(side) {
-                // Save state to LS
-                const transitData = {
-                    side: side,
-                    y: boxState.y,
-                    vx: boxState.vx, 
-                    vy: boxState.vy,
-                    timestamp: Date.now()
-                };
-                localStorage.setItem('wormhole_transit', JSON.stringify(transitData));
-                
-                // Trigger event for other tabs
-                localStorage.setItem('wormhole_event', Date.now());
 
-                // Hide local box
-                box.style.display = 'none';
-                
-                // Respawn safety: if no one catches it, bring it back after 3s? 
-                // For now, let's keep it simple. It's lost in the void if no other tab is open.
-            }
-
-            // Listen for Wormhole arrivals
-            window.addEventListener('storage', (e) => {
-               if (e.key === 'wormhole_event') {
-                   // Check if there is payload intended for us
-                   const payload = localStorage.getItem('wormhole_transit');
-                   if (payload) {
-                       const data = JSON.parse(payload);
-                       // We only catch if we are NOT the sender (basic check: we execute this too fast?)
-                       // Actually storage event doesn't fire on the tab that changed it, so we are safe.
-                       // We are the receiver.
-                       
-                       box.style.display = 'flex';
-                       // Invert X side
-                       boxState.x = (data.side === 'right') ? -70 : window.innerWidth; 
-                       boxState.y = data.y;
-                       boxState.vx = data.vx;
-                       boxState.vy = data.vy;
-                       updatePhysics(); // Restart loop if needed (it's always running though)
-                       
-                       // Consume payload so we don't have multiple clones if multiple tabs open?
-                       // Race condition possible but rare for 1 user.
-                       localStorage.removeItem('wormhole_transit');
-                   }
-               }
-            });
 
             // C. INTER-WINDOW SYNC (GOD MODE)
             // Listen for changes in other tabs
@@ -1473,12 +1413,17 @@
                              if (Math.abs(xForce) > 0.05 || Math.abs(yForce) > 0.05) boxState.hasMoved = true;
                         }
 
-                        // B. HERO TITLE PARALLAX (CMY) - Uses Global or Direct?
+                        // B. HERO TITLE PARALLAX (CMY)
                         // Let's use the same logic as before but linked to the new global or direct map
                         const titleContainer = document.getElementById('hero-title-container');
                         if (titleContainer) {
-                            const rY = Math.max(-15, Math.min(15, gamma / 2));
-                            const rX = Math.max(-15, Math.min(15, (beta - 45) / 2));
+                            // CORRECTED MAPPING:
+                            // Gamma (Left/Right Tilt) -> Controls X axis (--rx)
+                            // Beta (Front/Back Tilt)  -> Controls Y axis (--ry)
+                            
+                            const rX = Math.max(-15, Math.min(15, gamma / 2));          // Gamma -> RX
+                            const rY = Math.max(-15, Math.min(15, (beta - 45) / 2));    // Beta -> RY
+                            
                             titleContainer.style.setProperty('--rx', rX);
                             titleContainer.style.setProperty('--ry', rY);
                         }
