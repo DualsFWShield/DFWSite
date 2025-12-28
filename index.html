@@ -161,22 +161,56 @@
         /* MOBILE ADAPTATIONS */
         @media (pointer: coarse), (hover: none) {
             /* Hide custom cursor on touch devices */
+            /* Hide custom cursor on touch devices */
             .cursor-dot, .cursor-outline { display: none !important; }
             body { cursor: auto !important; }
             
             /* Reduce CRT effect for performance */
             .crt-scanlines { opacity: 0.15; }
             
-            /* CMY title: auto-animate instead of mouse-driven */
-            .cmy-wrapper {
-                animation: cmy-pulse 4s ease-in-out infinite;
-            }
-            @keyframes cmy-pulse {
-                0%, 100% { --rx: -5; --ry: 0; }
-                25% { --rx: 5; --ry: 3; }
-                50% { --rx: 0; --ry: -5; }
-                75% { --rx: -3; --ry: 5; }
-            }
+            /* CMY title: REMOVED AUTO-ANIMATION FOR GYRO PARALLAX */
+            /*.cmy-wrapper { animation: cmy-pulse 4s ease-in-out infinite; }*/
+        }
+
+        /* DATA DISK UI */
+        #gravity-box {
+            flex-direction: column; 
+            gap: 4px;
+        }
+        #disk-toggle {
+            width: 16px; height: 16px;
+            border: 1px solid #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            background: transparent;
+            transition: background 0.3s;
+        }
+        #disk-toggle.active { background: #20C20E; box-shadow: 0 0 5px #20C20E; border-color: #20C20E; }
+        
+        #disk-hint {
+            position: absolute;
+            bottom: 110%; left: 50%; 
+            transform: translateX(-50%);
+            background: #000; color: #ccff00; 
+            border: 2px solid #fff;
+            padding: 8px 12px; 
+            font-family: 'Space Mono', monospace;
+            font-size: 10px; 
+            pointer-events: none; 
+            opacity: 0;
+            z-index: 10000;
+            white-space: nowrap;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.5);
+        }
+        /* Arrow for the hint */
+        #disk-hint::after {
+            content: '';
+            position: absolute;
+            top: 100%; left: 50%;
+            margin-left: -6px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: #fff transparent transparent transparent;
         }
         
     </style>
@@ -188,6 +222,10 @@
     <!-- GRAVITY BOX -->
     <div id="gravity-box">
         <span class="pointer-events-none">DATA_DISK<br>v1.0</span>
+        <!-- Toggle Button for Mobile Sensors -->
+        <div id="disk-toggle" title="Toggle Sensors"></div>
+        <!-- Hint attached to box -->
+        <div id="disk-hint">OPEN THE WEBSITE IN A SECOND WINDOW AND THROW ME IN IT</div>
     </div>
 
     <!-- 
@@ -512,7 +550,6 @@
                 <!-- LOGO 1 -->
                 <div class="logo-card aspect-square bg-white border-4 border-black p-8 flex items-center justify-center hover:bg-black hover:invert transition-all duration-300 group hover-trigger cursor-none relative">
                     <span class="absolute top-2 left-2 text-xs font-mono opacity-50">#01</span>
-                    <!-- Remplace src par ton image de logo -->
                     <img src="media/logo (0).jpg" alt="Logo 1" class="w-full h-full object-contain mix-blend-multiply group-hover:mix-blend-normal">
                 </div>
 
@@ -1332,58 +1369,140 @@
             // Vortex visuals removed by user request
 
             // --- 7. MOBILE SENSORS (GYRO + HAPTICS) ---
+            
+            // DATA DISK STATE EXTENSION
+            if (typeof boxState !== 'undefined') {
+                boxState.sensorsEnabled = false; // Default OFF
+                boxState.hasMoved = false;
+                boxState.switchInteracted = false;
+            }
+
+            // TOGGLE LOGIC
+            const diskToggle = document.getElementById('disk-toggle');
+            if (diskToggle) {
+                diskToggle.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Don't drag
+                    boxState.sensorsEnabled = !boxState.sensorsEnabled;
+                    boxState.switchInteracted = true; // Mark as interacted
+                    diskToggle.classList.toggle('active', boxState.sensorsEnabled);
+                    
+                    // Hide hint immediately if clicked
+                    if (diskHint) gsap.to(diskHint, { opacity: 0, duration: 0.2 });
+
+                    if (boxState.sensorsEnabled && navigator.vibrate) navigator.vibrate(50);
+                });
+                
+                diskToggle.addEventListener('touchstart', (e) => { e.stopPropagation(); }, {passive: true});
+            }
+
+            // INACTIVITY HINT
+            const diskHint = document.getElementById('disk-hint');
+            if (diskHint) {
+                // Set message text based on device
+                const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+                if (isTouch) diskHint.innerText = "TAP TO ACTIVATE SENSORS"; // Arrow points down to box/switch
+                
+                // Timer: 30s
+                setTimeout(() => {
+                    // Condition: Switch NEVER clicked (for mobile) OR Box NEVER moved (fallback for PC if no switch use)
+                    // User request: "untouched = pas de click sur le switch"
+                    const showHint = isTouch ? !boxState.switchInteracted : !boxState.hasMoved;
+
+                    if (showHint) {
+                        gsap.to(diskHint, { opacity: 1, duration: 0.5, onComplete: () => {
+                            gsap.to(diskHint, { opacity: 0, delay: 10, duration: 0.5 }); // 10 seconds visibility
+                        }});
+                    }
+                }, 30000); // 30s
+            }
+
             function initMobileSensors() {
                 // Check for sensor support
-                if (window.DeviceOrientationEvent && 'ontouchstart' in window) {
+                if (window.DeviceOrientationEvent) { // Removed 'ontouchstart' check to allow testing on capable laptops, but mostly for mobile
                     
                     window.addEventListener('deviceorientation', (e) => {
-                        // Null check for desktop dev tools or non-gyro devices
+                        // Null check
                         if (e.beta === null || e.gamma === null) return;
 
                         const beta = e.beta;   // -180 to 180 (front/back tilt)
                         const gamma = e.gamma; // -90 to 90 (left/right tilt)
                         
-                        // A. DATA DISK GRAVITY (Override/Add to physics)
-                        // Only apply if not dragging and box is visible
-                        if (typeof boxState !== 'undefined' && !boxState.isDragging && document.getElementById('gravity-box').style.display !== 'none') {
-                             // Beta: standard holding position is ~45deg. 
-                             // We want 0 force at 45deg. Tipping forward (<45) = negative Y force (up). Tipping back (>45) = positive Y force (down).
+                        // GLOBAL PARALLAX VARS (Always On)
+                        // Map -90..90 to -1..1 range approx
+                        const pX = Math.max(-1, Math.min(1, gamma / 45)); 
+                        const pY = Math.max(-1, Math.min(1, (beta - 45) / 45));
+                        
+                        document.body.style.setProperty('--p-x', pX);
+                        document.body.style.setProperty('--p-y', pY);
+
+                        // A. DATA DISK GRAVITY (Controlled by Toggle)
+                        if (typeof boxState !== 'undefined' && 
+                            !boxState.isDragging && 
+                            document.getElementById('gravity-box').style.display !== 'none' &&
+                            boxState.sensorsEnabled) {
+                             
                              const yForce = (beta - 45) * 0.05; 
                              const xForce = gamma * 0.05;
                              
                              boxState.vx += xForce;
                              boxState.vy += yForce;
+                             
+                             // Mark as moved if moving significantly
+                             if (Math.abs(xForce) > 0.05 || Math.abs(yForce) > 0.05) boxState.hasMoved = true;
                         }
 
-                        // B. HERO TITLE PARALLAX (CMY)
+                        // B. HERO TITLE PARALLAX (CMY) - Uses Global or Direct?
+                        // Let's use the same logic as before but linked to the new global or direct map
                         const titleContainer = document.getElementById('hero-title-container');
                         if (titleContainer) {
-                            // Map tilt to similar range as mouse (-15 to 15)
-                            // Gamma (Left/Right) -> X axis
-                            // Beta (Up/Down) -> Y axis
                             const rY = Math.max(-15, Math.min(15, gamma / 2));
                             const rX = Math.max(-15, Math.min(15, (beta - 45) / 2));
-                            
                             titleContainer.style.setProperty('--rx', rX);
                             titleContainer.style.setProperty('--ry', rY);
                         }
 
-                        // C. TERMINAL ARCHIVE LIST (Row Parallax/Depth)
-                        // We want the rows to slide slightly based on X tilt (gamma)
+                        // C. TERMINAL ARCHIVE LIST (Row Depth)
                         const terminalRows = document.querySelectorAll('#terminal tbody tr');
                         if (terminalRows.length > 0) {
-                            // Throttle GSAP updates slightly or just set directly for performance? 
-                            // Direct transform is faster than creating GSAP tweens every frame.
-                            const xTilt = Math.max(-30, Math.min(30, gamma)); // Clamp
-                            
+                            const xTilt = Math.max(-30, Math.min(30, gamma)); 
                             terminalRows.forEach((row, index) => {
-                                // Stagger factor: deeper items move more or less? 
-                                // Let's make top items move less, bottom items move more => depth.
                                 const depth = 1 + (index * 0.2); 
                                 const xPos = xTilt * depth * 0.5;
                                 row.style.transform = `translateX(${xPos}px)`;
                             });
                         }
+                        
+                        // D. EXPANDED PARALLAX (Articles, Videos, Logos, Footer)
+                        // We use the CSS vars --p-x and --p-y set above.
+                        // We can apply transforms directly here for better performance than CSS calc() in loop?
+                        // Let's do direct transforms for smoothness.
+                        
+                        // 1. Articles
+                        document.querySelectorAll('article').forEach((el, i) => {
+                            const depth = 10 + (i % 3) * 5; 
+                            el.style.transform = `translate(${pX * depth}px, ${pY * depth}px)`;
+                        });
+                        
+                        // 2. Video Containers
+                        document.querySelectorAll('.video-container').forEach((el, i) => {
+                             const depth = 10;
+                             el.style.transform = `translate(${pX * depth}px, ${pY * depth}px) scale(1.02)`; // Scale to avoid edge clipping
+                        });
+                        
+                        // 3. Logos
+                        document.querySelectorAll('.logo-card').forEach((el, i) => {
+                             const depth = 8 + (i % 4) * 2;
+                             el.style.transform = `translate(${pX * depth}px, ${pY * depth}px)`;
+                        });
+                        
+                        // 4. LinkedIn Footer Title
+                        // We need to target it specifically. It's the big link in footer.
+                        const footerLink = document.querySelector('footer a[href*="linkedin"]');
+                        if (footerLink) {
+                             footerLink.style.transform = `translate(${pX * 20}px, ${pY * 20}px)`;
+                             footerLink.style.display = 'inline-block'; // Ensure transform applies
+                        }
+
                     });
                 }
             }
@@ -1392,7 +1511,7 @@
 
             // Utilities
             function triggerHaptic() {
-                 if (navigator.vibrate) navigator.vibrate(15);
+                 if (boxState.sensorsEnabled && navigator.vibrate) navigator.vibrate(15);
             }
 
         });
