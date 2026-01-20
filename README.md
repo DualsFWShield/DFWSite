@@ -52,6 +52,11 @@ On mobile devices, the Gyroscope breathes life into the static page:
 -   **Hero Title**: CMY layers split based on device orientation.
 -   **Depths**: Project Cards, Videos, Logo Grid, and Footer Title all have varying depth (parallax) layers responsive to tilt.
 
+### 6. Privacy Protocol (Zero-Data)
+A transparent, static confirmation that no user data is collected.
+-   **Dedicated Page**: `privacy.html` accessible via footer.
+-   **Philosophy**: No cookies, no trackers, strict local-only execution.
+
 ---
 
 ## 🥚 Easter Eggs & Secrets (System Hints)

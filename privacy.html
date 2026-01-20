@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUALS | PRIVACY</title>
+    
+    <!-- Polices Brutalistes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Config Néo-Brutaliste -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'concrete': '#f0f0f0',
+                        'acid-yellow': '#ccff00',
+                        'electric-blue': '#0022ff',
+                        'neon-pink': '#ff0099',
+                        'off-black': '#050505',
+                        'terminal-green': '#20C20E',
+                    },
+                    fontFamily: {
+                        'display': ['"Archivo Black"', 'sans-serif'],
+                        'mono': ['"Space Mono"', 'monospace'],
+                    },
+                    boxShadow: {
+                        'hard': '8px 8px 0px 0px #000',
+                        'hard-sm': '4px 4px 0px 0px #000',
+                        'hard-hover': '0px 0px 0px 0px #000',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f0f0f0;
+            color: #050505;
+            cursor: none;
+            overflow-x: hidden;
+        }
+
+        ::selection {
+            background-color: #050505;
+            color: #20C20E;
+        }
+
+        /* Custom Cursor */
+        .cursor-dot, .cursor-outline {
+            position: fixed;
+            top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .cursor-dot { width: 8px; height: 8px; background-color: black; }
+        .cursor-outline {
+            width: 40px; height: 40px;
+            border: 2px solid black;
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        body.hovering .cursor-outline {
+            width: 80px; height: 80px;
+            background-color: #ccff00;
+            mix-blend-mode: difference;
+            border-color: transparent;
+        }
+
+        /* Utility */
+        .text-stroke { -webkit-text-stroke: 2px black; color: transparent; }
+
+        /* Boot Overlay */
+        #boot-overlay {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 2rem; font-family: 'Space Mono', monospace;
+            color: #20C20E; pointer-events: auto;
+        }
+        .boot-text { font-size: 14px; line-height: 1.5; }
+
+        /* CRT Overlay */
+        .crt-scanlines {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none; z-index: 9998;
+            opacity: 0.4;
+        }
+
+        /* Mobile Adaptations */
+        @media (pointer: coarse), (hover: none) {
+            .cursor-dot, .cursor-outline { display: none !important; }
+            body { cursor: auto !important; }
+            .crt-scanlines { opacity: 0.15; }
+        }
+    </style>
+</head>
+<body class="font-mono antialiased overflow-hidden">
+
+    <!-- CRT EFFECT -->
+    <div class="crt-scanlines"></div>
+
+    <!-- BOOT OVERLAY -->
+    <div id="boot-overlay">
+        <div id="boot-log" class="flex flex-col gap-1 mb-8 max-w-2xl"></div>
+        <div class="w-full max-w-md bg-gray-900 h-1 mb-2">
+            <div id="boot-progress" class="bg-terminal-green h-full w-0"></div>
+        </div>
+        <div class="flex justify-between items-end w-full max-w-md">
+            <p class="animate-pulse text-xs">PRIVACY_PROTOCOL_INIT...</p>
+            <p class="text-xs">v1.0.0-SECURE</p>
+        </div>
+    </div>
+
+    <!-- CURSOR -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- NAV -->
+    <nav class="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-50 mix-blend-difference text-white pointer-events-none">
+        <a href="index.html" class="text-2xl font-display pointer-events-auto hover-trigger flex items-center gap-2">
+            <span>&lt;</span> BACK_TO_ROOT
+        </a>
+        <div class="hidden md:flex gap-6 text-sm md:text-base pointer-events-auto font-bold">
+            <span class="text-acid-yellow">[LOCKED_MODE]</span>
+        </div>
+    </nav>
+
+    <main class="relative w-full min-h-screen flex flex-col pt-20">
+
+        <!-- PRIVACY SECTION -->
+        <section class="flex-grow flex flex-col justify-center items-center px-4 py-12 md:py-24 bg-concrete relative overflow-hidden">
+            <!-- Grid Background -->
+            <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px); background-size: 40px 40px;"></div>
+
+            <div class="relative z-10 max-w-4xl w-full">
+                <!-- Huge Label -->
+                <h1 class="font-display text-5xl md:text-9xl mb-12 mix-blend-difference break-words leading-none">
+                    NO_DATA<br><span class="text-stroke">TRACE</span>
+                </h1>
+
+                <!-- The "File" -->
+                <div id="privacy-card" class="bg-white border-4 border-black p-6 md:p-12 shadow-hard hover:shadow-hard-hover transition-all duration-300 relative group">
+                    <div class="absolute -top-4 -right-4 bg-black text-white px-4 py-2 font-bold font-mono">
+                        CONFIDENTIAL_
+                    </div>
+                    
+                    <div class="flex flex-col gap-8">
+                        <div class="border-b-4 border-black pb-4">
+                            <h2 class="text-2xl font-bold mb-2">> POLITIQUE DE CONFIDENTIALITÉ</h2>
+                            <p class="text-xs font-mono opacity-60">ID: PRIVACY-2025 // STATUS: ENFORCED</p>
+                        </div>
+
+                        <div class="space-y-6 font-mono text-base md:text-lg leading-relaxed">
+                            <p class="font-bold text-xl">
+                                01 // COLLECTE DE DONNÉES
+                            </p>
+                            <p>
+                                <span class="bg-black text-white px-1">NÉANT.</span> Je ne collecte aucune information personnelle. Aucun formulaire caché, aucune base de données obscure.
+                            </p>
+
+                            <p class="font-bold text-xl mt-8">
+                                02 // COOKIES & TRACKERS
+                            </p>
+                            <p>
+                                <span class="bg-black text-white px-1">REFUSÉS.</span> Ce site n'utilise pas de cookies de suivi. Votre navigation reste 100% locale et privée.
+                            </p>
+                            
+                            <p class="font-bold text-xl mt-8">
+                                03 // STOCKAGE
+                            </p>
+                            <p>
+                                Tout reste sur votre machine (LocalStorage pour les préférences). Rien ne quitte votre navigateur.
+                            </p>
+
+                            <div class="p-4 bg-off-black text-terminal-green mt-8 font-mono text-sm border-2 border-black">
+                                <span class="animate-pulse">root@dualsfw:~#</span> check_privacy_status<br>
+                                > SCANNING...<br>
+                                > ANALYTICS: DISABLED<br>
+                                > ADS: DISABLED<br>
+                                > 3RD_PARTY: NONE<br>
+                                > RESULT: 100% PRIVATE
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer-ish info -->
+                <div class="mt-12 text-center font-mono text-xs opacity-60">
+                    Host: GitHub Pages (Static Enclave) <br>
+                    Region: Global
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="bg-acid-yellow py-10 px-4 md:px-12 border-t-4 border-black text-center">
+             <p class="font-bold text-xl text-off-black">DUALSFWSHIELD // 2025</p>
+             <p class="font-mono text-sm mt-2">SECURE CONNECTION MAINTAINED.</p>
+        </footer>
+
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.0.45/dist/lenis.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // --- BOOT SEQUENCE ---
+            const bootOverlay = document.getElementById('boot-overlay');
+            const bootLog = document.getElementById('boot-log');
+            const bootBar = document.getElementById('boot-progress');
+            const logs = [
+                "INIT_PRIVACY_SHIELD...",
+                "BLOCKING_TRACKERS...",
+                "CLEARING_LOGS...",
+                "SECURING_CONNECTION...",
+                "ACCESS_GRANTED."
+            ];
+
+            let logIndex = 0;
+            gsap.to("#boot-overlay", {opacity: 1, duration: 0});
+
+            const logInterval = setInterval(() => {
+                if (logIndex < logs.length) {
+                    const p = document.createElement('p');
+                    p.className = 'boot-text font-mono text-xs text-terminal-green';
+                    p.innerText = `> ${logs[logIndex]}`;
+                    bootLog.appendChild(p);
+                    gsap.fromTo(p, {opacity:0, x: -10}, {opacity:1, x:0, duration:0.1});
+                    logIndex++;
+                    bootLog.scrollTop = bootLog.scrollHeight;
+                } else {
+                    clearInterval(logInterval);
+                }
+            }, 150);
+
+            gsap.to(bootBar, {
+                width: "100%", 
+                duration: 1.5, 
+                ease: "power2.inOut",
+                onComplete: () => {
+                    setTimeout(() => {
+                        gsap.to(bootOverlay, {
+                            yPercent: -100,
+                            duration: 0.8,
+                            ease: "power4.inOut",
+                            onComplete: () => {
+                                document.body.classList.remove('overflow-hidden');
+                                bootOverlay.style.display = 'none';
+                                startAnimations();
+                            }
+                        });
+                    }, 200);
+                }
+            });
+
+            // --- SMOOTH SCROLL ---
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                smooth: true,
+            });
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
+            }
+            requestAnimationFrame(raf);
+
+            // --- CURSOR LOGIC ---
+            if (window.matchMedia("(pointer: fine)").matches) {
+                const cursorDot = document.querySelector('.cursor-dot');
+                const cursorOutline = document.querySelector('.cursor-outline');
+                
+                window.addEventListener('mousemove', (e) => {
+                    gsap.set(cursorDot, { x: e.clientX, y: e.clientY });
+                    gsap.to(cursorOutline, { x: e.clientX, y: e.clientY, duration: 0.15 });
+                });
+
+                document.querySelectorAll('a, button, .hover-trigger, h1').forEach(trigger => {
+                    trigger.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+                    trigger.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+                });
+            }
+
+            // --- PAGE ANIMATIONS ---
+            function startAnimations() {
+                gsap.fromTo("h1", 
+                    { y: 100, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        duration: 1,
+                        ease: "power4.out"
+                    }
+                );
+                
+                gsap.fromTo("#privacy-card", 
+                    { y: 50, opacity: 0 },
+                    { 
+                        y: 0,
+                        opacity: 1,
+                        duration: 1,
+                        delay: 0.3,
+                        ease: "power4.out"
+                    }
+                );
+            }
+        });
+    </script>
+</body>
+</html>
