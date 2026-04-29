@@ -69,7 +69,7 @@
             top: 0; left: 0;
             transform: translate(-50%, -50%);
             border-radius: 50%;
-            z-index: 9999;
+            z-index: 10000;
             pointer-events: none;
         }
         .cursor-dot { width: 8px; height: 8px; background-color: black; }
@@ -287,14 +287,13 @@
         
     </div>
 
-    <!-- CURSOR -->
-    <div class="cursor-dot"></div>
-    <div class="cursor-outline"></div>
+
 
     <!-- NAV -->
     <nav class="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-50 mix-blend-difference text-white pointer-events-none">
         <a href="#" id="nav-logo" class="text-2xl font-display pointer-events-auto hover-trigger">DualsFWShield</a>
         <div class="hidden md:flex gap-6 text-sm md:text-base pointer-events-auto font-bold">
+            <a href="#beerdex" class="text-neon-pink hover:text-white hover-trigger">[BEERDEX]</a>
             <a href="#projects" class="hover:text-acid-yellow hover-trigger">[DEV]</a>
             <a href="#videos" class="hover:text-acid-yellow hover-trigger">[MOTION]</a>
             <a href="#logos" class="hover:text-acid-yellow hover-trigger">[DESIGN]</a>
@@ -374,6 +373,163 @@
             </div>
         </div>
 
+        <!-- SECTION: BEERDEX -->
+        <section id="beerdex" class="p-4 md:p-12 bg-[#111111] text-white relative border-b-4 border-black overflow-hidden">
+            <div class="absolute right-[-10%] top-[-10%] text-[30vw] font-display text-white opacity-[0.03] pointer-events-none rotate-12 leading-none select-none">BEER</div>
+            
+            <div class="relative z-10 flex flex-col lg:flex-row items-center gap-12 max-w-7xl mx-auto py-12">
+                <!-- Text / Info -->
+                <div class="flex-1 w-full">
+                    <div class="flex items-center gap-4 mb-4 font-mono text-acid-yellow text-xl font-bold">
+                        <span class="w-4 h-4 bg-acid-yellow rounded-full animate-pulse border-2 border-black"></span>
+                        <p>> FEATURED_APP</p>
+                    </div>
+                    <h2 class="font-display text-6xl md:text-8xl lg:text-9xl uppercase tracking-tighter mb-6">
+                        BEER<br><span class="text-transparent" style="-webkit-text-stroke: 4px #ccff00;">DEX</span>
+                    </h2>
+                    <p class="font-mono text-lg md:text-xl max-w-xl mb-8 leading-relaxed border-l-4 border-acid-yellow pl-4 bg-white/5 p-4 shadow-hard-sm">
+                        L'application ultime pour les amateurs de bière. Scannez des codes-barres, débloquez des succès, construisez votre collection et calculez votre taux d'alcoolémie (BAC) en temps réel.
+                    </p>
+                    
+                    <div class="flex flex-wrap items-center gap-4 font-bold">
+                        <a href="https://beerdex.be" target="_blank" class="bg-acid-yellow text-black px-8 py-4 text-xl border-4 border-black shadow-[4px_4px_0px_0px_#ccff00] hover:shadow-[0px_0px_0px_0px_#ccff00] hover:translate-x-1 hover:translate-y-1 transition-all duration-200 hover-trigger inline-flex items-center gap-2">
+                            <span>LAUNCH_APP</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                        </a>
+                        <a href="https://play.google.com/store/apps/details?id=co.median.android.yeenpjz" target="_blank" class="hover:scale-105 transition-transform hover-trigger h-[55px] flex items-center ml-2">
+                            <img src="media/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" class="h-full object-contain">
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Visual -->
+                <div class="flex-1 w-full flex justify-center relative mt-12 lg:mt-0" id="beerdex-visual-container">
+                    <div id="beerdex-mockup-container" class="bg-[#111111] border-4 border-black p-2 shadow-[16px_16px_0px_0px_#ccff00] transform -rotate-2 hover:rotate-0 transition-all duration-500 relative group w-full max-w-3xl z-30">
+                        <!-- Badge -->
+                        <div id="beerdex-badge" class="absolute -top-6 -right-6 bg-neon-pink text-white font-bold font-mono px-4 py-2 border-4 border-black z-20 shadow-hard transform rotate-12 transition-opacity duration-300">
+                            v2.9.0
+                        </div>
+                        
+                        <!-- Content inside "screen" -->
+                        <div id="beerdex-inner" class="bg-[#111111] w-full aspect-video border-2 border-black relative overflow-hidden flex flex-col transition-all duration-500">
+                            <!-- Header bar -->
+                            <div class="h-8 bg-black w-full flex items-center px-2 gap-2 group/mac border-b-2 border-black shrink-0">
+                                <div class="flex gap-1.5">
+                                    <div id="btn-beerdex-close" class="w-3 h-3 bg-red-500 rounded-full flex items-center justify-center cursor-pointer relative overflow-hidden text-black font-bold border border-black/20" title="Close">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-hover/mac:opacity-100 transition-opacity"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    </div>
+                                    <div id="btn-beerdex-min" class="w-3 h-3 bg-yellow-500 rounded-full flex items-center justify-center cursor-pointer relative overflow-hidden text-black font-bold border border-black/20" title="Minimize">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-hover/mac:opacity-100 transition-opacity"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                    </div>
+                                    <div id="btn-beerdex-max" class="w-3 h-3 bg-green-500 rounded-full flex items-center justify-center cursor-pointer relative overflow-hidden text-black font-bold border border-black/20" title="Fullscreen">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-hover/mac:opacity-100 transition-opacity"><path d="M15 3h6v6"></path><path d="M10 14L21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                                    </div>
+                                </div>
+                                <div class="ml-auto text-xs font-mono text-white/50 select-none">beerdex.be</div>
+                            </div>
+                            <!-- Mockup body -->
+                            <div class="flex-1 w-full relative overflow-hidden group/img bg-[#111111] flex items-center justify-center">
+                                <img src="media/beerdex.png" alt="Beerdex" class="w-full h-full object-cover object-top scale-[1.02] group-hover/img:scale-[1.08] transition-transform duration-500">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Beerdex Mac JS Logic & Fullscreen CSS -->
+            <style>
+                #beerdex-mockup-container:fullscreen, #beerdex-mockup-container:-webkit-full-screen {
+                    max-width: 100vw !important;
+                    width: 100vw !important;
+                    height: 100vh !important;
+                    border: none !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    transform: none !important;
+                    background: #000 !important;
+                    cursor: auto !important;
+                }
+                #beerdex-mockup-container:fullscreen *, #beerdex-mockup-container:-webkit-full-screen * {
+                    cursor: auto !important;
+                }
+                #beerdex-mockup-container:fullscreen #beerdex-inner, #beerdex-mockup-container:-webkit-full-screen #beerdex-inner {
+                    height: 100% !important;
+                    border: none !important;
+                    aspect-ratio: auto !important;
+                }
+                #beerdex-mockup-container:fullscreen img, #beerdex-mockup-container:-webkit-full-screen img {
+                    object-fit: contain !important;
+                    transform: none !important;
+                }
+                #beerdex-mockup-container:fullscreen #beerdex-badge, #beerdex-mockup-container:-webkit-full-screen #beerdex-badge {
+                    opacity: 0 !important;
+                    pointer-events: none !important;
+                }
+            </style>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const mockup = document.getElementById('beerdex-mockup-container');
+                    const btnClose = document.getElementById('btn-beerdex-close');
+                    const btnMin = document.getElementById('btn-beerdex-min');
+                    const btnMax = document.getElementById('btn-beerdex-max');
+                    
+                    let isMinimized = false;
+
+                    if (mockup && btnClose && btnMin && btnMax) {
+                        // Close
+                        btnClose.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            mockup.style.opacity = '0';
+                            mockup.style.pointerEvents = 'none';
+                            mockup.style.transform = 'scale(0.8) rotate(0deg)';
+                            setTimeout(() => {
+                                mockup.style.display = 'none';
+                            }, 500);
+                        });
+
+                        // Minimize
+                        btnMin.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                                isMinimized = !isMinimized;
+                                if (isMinimized) {
+                                    mockup.style.transform = 'scale(0.3) translateY(50%)';
+                                    mockup.style.opacity = '0.8';
+                                } else {
+                                    mockup.style.transform = '';
+                                    mockup.style.opacity = '';
+                                }
+                            }
+                        });
+
+                        // Maximize
+                        btnMax.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                                // Restore if minimized
+                                if (isMinimized) {
+                                    isMinimized = false;
+                                    mockup.style.transform = '';
+                                    mockup.style.opacity = '';
+                                }
+                                const req = mockup.requestFullscreen || mockup.webkitRequestFullscreen;
+                                if (req) {
+                                    req.call(mockup).catch(err => {
+                                        console.log(`Error attempting to enable full-screen: ${err.message}`);
+                                    });
+                                }
+                            } else {
+                                const exit = document.exitFullscreen || document.webkitExitFullscreen;
+                                if (exit) {
+                                    exit.call(document);
+                                }
+                            }
+                        });
+                    }
+                });
+            </script>
+        </section>
+
         <!-- SECTION 1: DEV PROJECTS -->
         <section id="projects" class="p-4 md:p-12 bg-concrete relative border-b-4 border-black">
             <div class="flex justify-between items-end mb-12">
@@ -383,7 +539,7 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Project 1: CHESS -->
-                <article class="group bg-white border-4 border-black p-6 shadow-hard hover:shadow-hard-hover hover:translate-x-2 hover:translate-y-2 transition-all duration-200 flex flex-col justify-between min-h-[450px] hover-trigger relative overflow-hidden">
+                <article class="group bg-white border-4 border-black p-6 shadow-hard hover:shadow-hard-hover hover:translate-x-2 hover:translate-y-2 transition-all duration-200 flex flex-col justify-between min-h-[450px] hover-trigger relative overflow-hidden cursor-pointer" onclick="window.open('https://dualsfwshield.github.io/DFWS-Chess/', '_blank')">
                     <div class="absolute top-2 right-2 z-20">
                         <div class="w-4 h-4 bg-terminal-green rounded-full border-2 border-black animate-pulse"></div>
                     </div>
@@ -399,33 +555,33 @@
                             <span class="bg-black text-white px-2 py-1 text-xs font-bold">GAME DEV</span>
                             <span class="border-2 border-black px-2 py-1 text-xs font-bold">LOGIC</span>
                         </div>
-                        <a href="https://dualsfwshield.github.io/DFWS-Chess/" target="_blank" class="mt-2 text-center bg-acid-yellow border-2 border-black py-2 font-bold hover:bg-black hover:text-white transition-colors">LAUNCH GAME</a>
+                        <span class="mt-2 text-center bg-acid-yellow border-2 border-black py-2 font-bold hover:bg-black hover:text-white transition-colors block w-full">LAUNCH GAME</span>
                     </div>
                 </article>
 
-                <!-- Project 2: SPOTIFY (Large) -->
-                <article class="group md:col-span-2 bg-off-black text-white border-4 border-black p-6 shadow-hard hover:shadow-hard-hover hover:translate-x-2 hover:translate-y-2 transition-all duration-200 min-h-[450px] hover-trigger relative overflow-hidden">
+                <!-- Project 2: DFW_CODE (Large) -->
+                <article class="group md:col-span-2 bg-off-black text-white border-4 border-black p-6 shadow-hard hover:shadow-hard-hover hover:translate-x-2 hover:translate-y-2 transition-all duration-200 min-h-[450px] hover-trigger relative overflow-hidden cursor-pointer" onclick="window.open('https://dfwcode.dualsfwshield.be/', '_blank')">
                     <div class="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity">
-                         <img src="media/spotify-history.jpeg" class="object-cover w-full h-full mix-blend-luminosity" alt="Music">
+                         <img src="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" class="object-cover w-full h-full mix-blend-luminosity" alt="Code">
                     </div>
                     <div class="relative z-10 flex flex-col h-full justify-between">
                         <div class="flex justify-between w-full border-b border-white/30 pb-4">
-                            <h3 class="font-display text-4xl md:text-6xl text-terminal-green">SPOTIFY_WRAPPED</h3>
-                            <span class="border border-terminal-green text-terminal-green px-2 py-1 h-fit text-sm">DATA_ANALYSIS</span>
+                            <h3 class="font-display text-4xl md:text-6xl text-terminal-green">DFW_CODE</h3>
+                            <span class="border border-terminal-green text-terminal-green px-2 py-1 h-fit text-sm">TOOL</span>
                         </div>
                         <div class="mt-8">
-                            <p class="text-xl max-w-lg font-mono">> Analyse d'historique d'écoute & Statistiques.</p>
+                            <p class="text-xl max-w-lg font-mono">> Générateur de QR code personnalisé.</p>
                             <div class="flex gap-4 mt-6">
-                                <a href="https://spotify.dualsfwshield.be/" target="_blank" class="bg-white text-black px-6 py-3 font-bold border-2 border-transparent hover:bg-acid-yellow hover:border-white transition-colors">
-                                    VIEW ANALYTICS
-                                </a>
+                                <span class="bg-white text-black px-6 py-3 font-bold border-2 border-transparent hover:bg-acid-yellow hover:border-white transition-colors">
+                                    LAUNCH TOOL
+                                </span>
                             </div>
                         </div>
                     </div>
                 </article>
 
                 <!-- Project 3: FILE MANIPULATOR -->
-                <article class="group bg-white border-4 border-black p-6 shadow-hard hover:shadow-hard-hover hover:translate-x-2 hover:translate-y-2 transition-all duration-200 flex flex-col justify-between min-h-[400px] hover-trigger">
+                <article class="group bg-white border-4 border-black p-6 shadow-hard hover:shadow-hard-hover hover:translate-x-2 hover:translate-y-2 transition-all duration-200 flex flex-col justify-between min-h-[400px] hover-trigger cursor-pointer" onclick="window.open('https://filetransformer.dualsfwshield.be/', '_blank')">
                     <div>
                         <h3 class="font-display text-4xl mb-2 group-hover:text-neon-pink transition-colors break-words">FILE_MANIPULATOR</h3>
                         <p class="text-sm font-bold border-b-2 border-black pb-4 mb-4">> Outils de manipulation de fichiers.</p>
@@ -433,7 +589,7 @@
                             <img src="media/file-manipulator.png" class="object-cover w-full h-full grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-110" alt="Cyber">
                         </div>
                     </div>
-                    <a href="https://filetransformer.dualsfwshield.be/" target="_blank" class="w-full text-center border-2 border-black py-2 font-bold hover:bg-black hover:text-white transition-colors">EXECUTE TOOL</a>
+                    <span class="w-full text-center border-2 border-black py-2 font-bold hover:bg-black hover:text-white transition-colors block">EXECUTE TOOL</span>
                 </article>
             </div>
         </section>
@@ -461,102 +617,6 @@
                         <iframe src="https://www.youtube.com/embed/videoseries?list=PLMpsep7swVlgVhp52905HZFK2yD0xAacf" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>
                 </div>
-
-                <!-- 1. Présentation Brn's -->
-                <div class="border-2 border-white/50 bg-black p-2 hover:border-acid-yellow transition-colors group">
-                    <p class="font-mono text-sm mb-2 text-white group-hover:text-acid-yellow">01_PRÉSENTATION_BRNS</p>
-                    <div class="video-container grayscale group-hover:grayscale-0 transition-all">
-                        <iframe src="https://www.youtube.com/embed/ftdtwRB0RLo" title="YouTube video" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                <!-- 2. Pc&T -->
-                <div class="border-2 border-white/50 bg-black p-2 hover:border-acid-yellow transition-colors group">
-                    <p class="font-mono text-sm mb-2 text-white group-hover:text-acid-yellow">02_PC&T</p>
-                    <div class="video-container grayscale group-hover:grayscale-0 transition-all">
-                        <iframe src="https://www.youtube.com/embed/O-9Ubj-ngzU" title="YouTube video" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                <!-- 3. Nespresso -->
-                <div class="border-2 border-white/50 bg-black p-2 hover:border-acid-yellow transition-colors group">
-                    <p class="font-mono text-sm mb-2 text-white group-hover:text-acid-yellow">03_NESPRESSO_EDIT</p>
-                    <div class="video-container grayscale group-hover:grayscale-0 transition-all">
-                         <iframe src="https://www.youtube.com/embed/h3zEhn8GZqU" title="YouTube video" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                <!-- 4. Huawei P20 Lite -->
-                <div class="border-2 border-white/50 bg-black p-2 hover:border-acid-yellow transition-colors group">
-                    <p class="font-mono text-sm mb-2 text-white group-hover:text-acid-yellow">04_HUAWEI_P20</p>
-                    <div class="video-container grayscale group-hover:grayscale-0 transition-all">
-                        <iframe src="https://www.youtube.com/embed/OI9hJdBIcGI" title="YouTube video" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                <!-- 5. Nalu -->
-                <div class="border-2 border-white/50 bg-black p-2 hover:border-acid-yellow transition-colors group">
-                    <p class="font-mono text-sm mb-2 text-white group-hover:text-acid-yellow">05_NALU_ENERGY</p>
-                    <div class="video-container grayscale group-hover:grayscale-0 transition-all">
-                        <iframe src="https://www.youtube.com/embed/gUGWVeQa2aE" title="YouTube video" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                <!-- 6. Huawei Watch GT -->
-                <div class="border-2 border-white/50 bg-black p-2 hover:border-acid-yellow transition-colors group">
-                    <p class="font-mono text-sm mb-2 text-white group-hover:text-acid-yellow">06_HUAWEI_WATCH_GT</p>
-                    <div class="video-container grayscale group-hover:grayscale-0 transition-all">
-                        <iframe src="https://www.youtube.com/embed/YjtRg_GhOA0" title="YouTube video" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                 <!-- 7. ZBL -->
-                 <div class="border-2 border-white/50 bg-black p-2 hover:border-acid-yellow transition-colors group">
-                    <p class="font-mono text-sm mb-2 text-white group-hover:text-acid-yellow">07_ZBL</p>
-                    <div class="video-container grayscale group-hover:grayscale-0 transition-all">
-                        <iframe src="https://www.youtube.com/embed/bt-qyCHlUag" title="YouTube video" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                 <!-- 8. Girls League -->
-                 <div class="border-2 border-white/50 bg-black p-2 hover:border-acid-yellow transition-colors group">
-                    <p class="font-mono text-sm mb-2 text-white group-hover:text-acid-yellow">08_GIRLS_LEAGUE</p>
-                    <div class="video-container grayscale group-hover:grayscale-0 transition-all">
-                        <iframe src="https://www.youtube.com/embed/NThv4X0bOEY" title="YouTube video" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                 <!-- 9. Street Family -->
-                 <div class="border-2 border-white/50 bg-black p-2 hover:border-acid-yellow transition-colors group">
-                    <p class="font-mono text-sm mb-2 text-white group-hover:text-acid-yellow">09_STREET_FAMILY</p>
-                    <div class="video-container grayscale group-hover:grayscale-0 transition-all">
-                        <iframe src="https://www.youtube.com/embed/KAcMzbUQzK0" title="YouTube video" allowfullscreen></iframe>
-                    </div>
-                </div>
-                
-                <!-- 10. Sound Design -->
-                 <div class="border-2 border-white/50 bg-black p-2 hover:border-acid-yellow transition-colors group">
-                    <p class="font-mono text-sm mb-2 text-white group-hover:text-acid-yellow">10_SOUND_DESIGN</p>
-                    <div class="video-container grayscale group-hover:grayscale-0 transition-all">
-                        <iframe src="https://www.youtube.com/embed/_IpacR7_z3Y" title="YouTube video" allowfullscreen></iframe>
-                    </div>
-                </div>
-                
-                <!-- 11. Chocapic -->
-                 <div class="border-2 border-white/50 bg-black p-2 hover:border-acid-yellow transition-colors group">
-                    <p class="font-mono text-sm mb-2 text-white group-hover:text-acid-yellow">11_PUB_CHOCAPIC</p>
-                    <div class="video-container grayscale group-hover:grayscale-0 transition-all">
-                        <iframe src="https://www.youtube.com/embed/6UdxVFILy-g" title="YouTube video" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                <!-- 12. Jewellery -->
-                 <div class="border-2 border-white/50 bg-black p-2 hover:border-acid-yellow transition-colors group">
-                    <p class="font-mono text-sm mb-2 text-white group-hover:text-acid-yellow">12_JEWELLERY_KISS</p>
-                    <div class="video-container grayscale group-hover:grayscale-0 transition-all">
-                        <iframe src="https://www.youtube.com/embed/cONBspJ8zRo" title="YouTube video" allowfullscreen></iframe>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -565,7 +625,7 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-4">
                 <h2 class="font-display text-5xl md:text-8xl uppercase leading-none">Identity_<br>Grid</h2>
                 <div class="text-right">
-                    <p class="font-bold text-xl">VECTOR_VAULT [8]</p>
+                    <p class="font-bold text-xl">VECTOR_VAULT [10]</p>
                     <p class="font-mono text-sm text-gray-600">CLIENT_WORK // PERSONAL</p>
                 </div>
             </div>
@@ -618,7 +678,20 @@
                     <span class="absolute top-2 left-2 text-xs font-mono opacity-50">#08</span>
                     <img src="media/Duals 2.0 -pp.png" alt="Logo 8" class="w-full h-full object-contain mix-blend-multiply group-hover:mix-blend-normal">
                 </div>
+
+                <!-- LOGO 9 -->
+                <div class="logo-card aspect-square bg-black border-4 border-black p-8 flex items-center justify-center hover:invert transition-all duration-300 group hover-trigger cursor-none relative">
+                    <span class="absolute top-2 left-2 text-xs font-mono text-white opacity-50">#09</span>
+                    <img src="media/logo%20(7).png" alt="Logo 9" class="w-full h-full object-contain">
+                </div>
+
+                <!-- LOGO 10 -->
+                <div class="logo-card aspect-square bg-white border-4 border-black p-8 flex items-center justify-center hover:bg-black transition-all duration-300 group hover-trigger cursor-none relative">
+                    <span class="absolute top-2 left-2 text-xs font-mono group-hover:text-white transition-colors duration-300 opacity-50 z-10">#10</span>
+                    <img src="media/logo%20(7)%20-%20transparent.png" alt="Logo 10" class="w-full h-full object-contain relative z-10 group-hover:invert transition-all duration-300">
+                </div>
             </div>
+
         </section>
 
         <!-- TERMINAL ARCHIVE LIST -->
@@ -641,16 +714,30 @@
                         </thead>
                         <tbody class="text-sm md:text-base">
                             <!-- Rows -->
-                            <tr class="hover:bg-terminal-green hover:text-black transition-colors border-b border-white/10 group cursor-pointer hover-trigger" onclick="window.open('https://dualsfwshield.github.io/Bot-Arena/')">
+                            <tr class="hover:bg-terminal-green hover:text-black transition-colors border-b border-white/10 group cursor-pointer hover-trigger" onclick="window.open('https://spotify.dualsfwshield.be/')">
+                                <td class="py-4 pl-4 font-bold">drwxr-xr-x</td>
+                                <td class="py-4 text-white/50 group-hover:text-black">0001</td>
+                                <td class="py-4 font-bold text-xl">SPOTIFY_WRAPPED</td>
+                                <td class="py-4 opacity-80">Analyse d'historique d'écoute</td>
+                                <td class="py-4 text-right pr-4">[RUN]</td>
+                            </tr>
+                            <tr class="hover:bg-terminal-green hover:text-black transition-colors border-b border-white/10 group cursor-pointer hover-trigger" onclick="window.open('https://dualsfwshield.github.io/Image-obfuscator/')">
                                 <td class="py-4 pl-4 font-bold">-rwxr-xr-x</td>
                                 <td class="py-4 text-white/50 group-hover:text-black">1092</td>
-                                <td class="py-4 font-bold text-xl">BOT_ARENA</td>
-                                <td class="py-4 opacity-80">Simulation de combat d'IA</td>
+                                <td class="py-4 font-bold text-xl">OBSCURIFY</td>
+                                <td class="py-4 opacity-80">Outil d'obfuscation d'images</td>
+                                <td class="py-4 text-right pr-4">[RUN]</td>
+                            </tr>
+                            <tr class="hover:bg-terminal-green hover:text-black transition-colors border-b border-white/10 group cursor-pointer hover-trigger" onclick="window.open('https://share.dualsfwshield.be/')">
+                                <td class="py-4 pl-4 font-bold">-rwxr--r--</td>
+                                <td class="py-4 text-white/50 group-hover:text-black">4402</td>
+                                <td class="py-4 font-bold text-xl">AETHERSHARE</td>
+                                <td class="py-4 opacity-80">Plateforme de partage de fichiers</td>
                                 <td class="py-4 text-right pr-4">[RUN]</td>
                             </tr>
                             <tr class="hover:bg-terminal-green hover:text-black transition-colors border-b border-white/10 group cursor-pointer hover-trigger" onclick="window.open('https://profiler.dualsfwshield.be/')">
                                 <td class="py-4 pl-4 font-bold">-rwxr--r--</td>
-                                <td class="py-4 text-white/50 group-hover:text-black">4402</td>
+                                <td class="py-4 text-white/50 group-hover:text-black">4403</td>
                                 <td class="py-4 font-bold text-xl">THE_PROFILER</td>
                                 <td class="py-4 opacity-80">Outil de profilage</td>
                                 <td class="py-4 text-right pr-4">[RUN]</td>
@@ -661,13 +748,6 @@
                                 <td class="py-4 font-bold text-xl">INTJ_ZONE</td>
                                 <td class="py-4 opacity-80">Documentation Personality Type</td>
                                 <td class="py-4 text-right pr-4">[VIEW]</td>
-                            </tr>
-                            <tr class="hover:bg-terminal-green hover:text-black transition-colors border-b border-white/10 group cursor-pointer hover-trigger" onclick="window.open('https://dualsfwshield.github.io/Puissance-4/')">
-                                <td class="py-4 pl-4 font-bold">-rwxr-xr-x</td>
-                                <td class="py-4 text-white/50 group-hover:text-black">3310</td>
-                                <td class="py-4 font-bold text-xl">PUISSANCE_4</td>
-                                <td class="py-4 opacity-80">Jeu classique Web</td>
-                                <td class="py-4 text-right pr-4">[PLAY]</td>
                             </tr>
                             <tr class="hover:bg-terminal-green hover:text-black transition-colors border-b border-white/10 group cursor-pointer hover-trigger" onclick="window.open('https://updown.dualsfwshield.be/')">
                                 <td class="py-4 pl-4 font-bold">-rwxr-xr-x</td>
@@ -682,13 +762,6 @@
                                 <td class="py-4 font-bold text-xl">PERSO_TESTS</td>
                                 <td class="py-4 opacity-80">Suite de tests psychologiques</td>
                                 <td class="py-4 text-right pr-4">[VIEW]</td>
-                            </tr>
-                             <tr class="hover:bg-terminal-green hover:text-black transition-colors border-b border-white/10 group cursor-pointer hover-trigger" onclick="window.open('https://dfwcode.dualsfwshield.be/')">
-                                <td class="py-4 pl-4 font-bold">drwxr-xr-x</td>
-                                <td class="py-4 text-white/50 group-hover:text-black">0001</td>
-                                <td class="py-4 font-bold text-xl">DFW_CODE</td>
-                                <td class="py-4 opacity-80">Générateur de QR code</td>
-                                <td class="py-4 text-right pr-4">[VISIT]</td>
                             </tr>
                         </tbody>
                     </table>
@@ -756,6 +829,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            console.log("Main script initialized");
             
             // --- 0. BOOT SEQUENCE ---
             const bootOverlay = document.getElementById('boot-overlay');
@@ -1692,5 +1766,182 @@
 
         });
     </script>
+    <!-- LOGO LIGHTBOX -->
+    <div id="logo-lightbox" class="fixed inset-0 z-[999] bg-white hidden flex flex-col justify-center items-center transition-all duration-300 opacity-0">
+        <!-- Header / Controls -->
+        <div class="absolute top-0 w-full p-4 md:p-8 flex justify-between items-start z-[1001] pointer-events-none">
+            <div class="font-mono opacity-50 pointer-events-auto">
+                <span id="lb-current-index" class="text-xl text-black transition-colors duration-300">#01</span>
+            </div>
+            <div class="flex gap-4 pointer-events-auto">
+                <button id="lb-fullscreen-btn" class="text-black bg-white border-2 border-black hover:bg-acid-yellow px-4 py-2 font-mono text-sm transition-all shadow-hard hover:shadow-hard-hover">
+                    [F11] FULLSCREEN
+                </button>
+                <button id="lb-close-btn" class="text-black bg-white border-2 border-black hover:bg-neon-pink hover:text-white w-10 h-10 flex items-center justify-center font-mono text-xl transition-all shadow-hard hover:shadow-hard-hover">
+                    X
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="relative w-full h-full flex items-center justify-center overflow-hidden z-[1000]">
+            <div id="lb-prev-btn" class="absolute left-0 top-0 bottom-0 w-1/4 md:w-1/5 flex items-center justify-start p-4 md:p-12 cursor-pointer group opacity-30 hover:opacity-100 transition-all duration-500 z-30">
+                <div class="w-full h-1/2 md:h-2/3 flex items-center justify-center transform -translate-x-4 group-hover:translate-x-0 transition-transform duration-500 scale-75 group-hover:scale-90">
+                    <img id="lb-prev-img" src="" alt="Previous" class="max-w-full max-h-full object-contain filter blur-[4px] group-hover:blur-none transition-all duration-500">
+                </div>
+            </div>
+            <div class="relative w-1/2 md:w-3/5 h-3/4 flex items-center justify-center z-10">
+                <img id="lb-main-img" src="" alt="Current Logo" class="max-w-full max-h-full object-contain transform transition-all duration-500 lb-center">
+            </div>
+            <div id="lb-next-btn" class="absolute right-0 top-0 bottom-0 w-1/4 md:w-1/5 flex items-center justify-end p-4 md:p-12 cursor-pointer group opacity-30 hover:opacity-100 transition-all duration-500 z-30">
+                <div class="w-full h-1/2 md:h-2/3 flex items-center justify-center transform translate-x-4 group-hover:translate-x-0 transition-transform duration-500 scale-75 group-hover:scale-90">
+                    <img id="lb-next-img" src="" alt="Next" class="max-w-full max-h-full object-contain filter blur-[4px] group-hover:blur-none transition-all duration-500">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .lb-slide-out-left { transform: translateX(-50%) scale(0.8); opacity: 0 !important; }
+        .lb-slide-out-right { transform: translateX(50%) scale(0.8); opacity: 0 !important; }
+        .lb-slide-in-from-right { transform: translateX(50%) scale(0.8); opacity: 0 !important; }
+        .lb-slide-in-from-left { transform: translateX(-50%) scale(0.8); opacity: 0 !important; }
+        .lb-center { transform: translateX(0) scale(1) !important; opacity: 1 !important; }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Lightbox script initialized");
+            const logos = [];
+            const cards = document.querySelectorAll('.logo-card');
+            
+            cards.forEach((card, index) => {
+                const img = card.querySelector('img');
+                const span = card.querySelector('span');
+                if (!img || !span) return;
+                
+                card.classList.add('cursor-pointer');
+                logos.push({
+                    src: img.src,
+                    id: span.textContent.trim(),
+                    bgColor: card.classList.contains('bg-black') ? 'black' : 'white'
+                });
+
+                card.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openLightbox(index);
+                });
+            });
+
+            const lightbox = document.getElementById('logo-lightbox');
+            const mainImg = document.getElementById('lb-main-img');
+            const prevImg = document.getElementById('lb-prev-img');
+            const nextImg = document.getElementById('lb-next-img');
+            const indexLabel = document.getElementById('lb-current-index');
+            
+            const btnClose = document.getElementById('lb-close-btn');
+            const btnFullscreen = document.getElementById('lb-fullscreen-btn');
+            const btnPrev = document.getElementById('lb-prev-btn');
+            const btnNext = document.getElementById('lb-next-btn');
+
+            let currentIndex = 0;
+            let isAnimating = false;
+
+            function updateLightbox(index, animationClass = null) {
+                if (!logos[index]) return;
+                currentIndex = index;
+                const prevIndex = (index - 1 + logos.length) % logos.length;
+                const nextIndex = (index + 1) % logos.length;
+
+                indexLabel.textContent = logos[index].id;
+                prevImg.src = logos[prevIndex].src;
+                nextImg.src = logos[nextIndex].src;
+
+                // Handle Background
+                if (logos[index].bgColor === 'black') {
+                    lightbox.style.backgroundColor = 'black';
+                    indexLabel.style.color = 'white';
+                    btnFullscreen.style.color = 'white';
+                    btnFullscreen.style.borderColor = 'white';
+                    btnClose.style.color = 'white';
+                    btnClose.style.borderColor = 'white';
+                } else {
+                    lightbox.style.backgroundColor = 'white';
+                    indexLabel.style.color = 'black';
+                    btnFullscreen.style.color = 'black';
+                    btnFullscreen.style.borderColor = 'black';
+                    btnClose.style.color = 'black';
+                    btnClose.style.borderColor = 'black';
+                }
+
+                if (animationClass) {
+                    mainImg.src = logos[index].src;
+                    mainImg.className = `max-w-full max-h-full object-contain transform transition-all duration-500 ${animationClass}`;
+                    void mainImg.offsetWidth;
+                    setTimeout(() => {
+                        mainImg.className = `max-w-full max-h-full object-contain transform transition-all duration-500 lb-center`;
+                        setTimeout(() => { isAnimating = false; }, 500);
+                    }, 50);
+                } else {
+                    mainImg.src = logos[index].src;
+                    mainImg.className = `max-w-full max-h-full object-contain transform transition-all duration-500 lb-center`;
+                    isAnimating = false;
+                }
+            }
+
+            function openLightbox(index) {
+                updateLightbox(index);
+                lightbox.classList.remove('hidden');
+                setTimeout(() => {
+                    lightbox.style.opacity = '1';
+                }, 10);
+            }
+
+            function closeLightbox() {
+                lightbox.style.opacity = '0';
+                setTimeout(() => {
+                    lightbox.classList.add('hidden');
+                }, 300);
+                if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+            }
+
+            function navigate(dir) {
+                if (isAnimating) return;
+                isAnimating = true;
+                const nextIndex = (currentIndex + dir + logos.length) % logos.length;
+                const outClass = dir > 0 ? 'lb-slide-out-left' : 'lb-slide-out-right';
+                const inClass = dir > 0 ? 'lb-slide-in-from-right' : 'lb-slide-in-from-left';
+                
+                mainImg.classList.add(outClass);
+                setTimeout(() => {
+                    updateLightbox(nextIndex, inClass);
+                }, 300);
+            }
+
+            btnClose.addEventListener('click', closeLightbox);
+            btnPrev.addEventListener('click', (e) => { e.stopPropagation(); navigate(-1); });
+            btnNext.addEventListener('click', (e) => { e.stopPropagation(); navigate(1); });
+            lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+
+            document.addEventListener('keydown', (e) => {
+                if (lightbox.classList.contains('hidden')) return;
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') navigate(-1);
+                if (e.key === 'ArrowRight') navigate(1);
+            });
+
+            btnFullscreen.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!document.fullscreenElement) {
+                    lightbox.requestFullscreen().catch(() => {});
+                } else {
+                    document.exitFullscreen().catch(() => {});
+                }
+            });
+        });
+    </script>
+    <!-- CURSOR -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
 </body>
 </html>
